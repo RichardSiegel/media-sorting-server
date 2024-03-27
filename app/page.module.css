@@ -1,0 +1,17 @@
+.main {
+	display: flex;
+	flex-direction: column;
+	flex-flow: wrap;
+	justify-content: center;
+	align-items: center;
+	padding: 6rem;
+	min-height: 100vh;
+}
+
+.fullscreenImage {
+	height: 100%;
+	width: 100%;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
