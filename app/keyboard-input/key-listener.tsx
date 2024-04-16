@@ -2,14 +2,14 @@
 
 import React from "react";
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
-import { FileState, ServerFilesContextConsumer } from "../server-files-context";
 import { useRouter } from "next/navigation";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { EventKey, KeyEventHandlers } from "./types";
+import { EventKey, FunctionKeyMap, fnKeyToKeyFnMap } from "./types";
+import { toggleFullscreen } from "../client-actions/browser-control";
 
-const useKeyListener = (keyEventHandlers: KeyEventHandlers) => {
-  const callbackForKey = (event: KeyboardEvent) => {
-    const keyEventHandler = keyEventHandlers[event.key as EventKey];
+const useKeyListener = async (functionKeyMap: FunctionKeyMap) => {
+  const keyFunctionMap = fnKeyToKeyFnMap(functionKeyMap);
+  const callbackForKey = ({ key }: KeyboardEvent) => {
+    const keyEventHandler = keyFunctionMap[key as EventKey];
     keyEventHandler !== undefined && keyEventHandler();
   };
 
@@ -31,47 +31,26 @@ const useKeyListener = (keyEventHandlers: KeyEventHandlers) => {
   }, [handleKeyPress]);
 };
 
-type KeyContextProps = {
-  context: FileState;
-  currentPath: string;
-  router: AppRouterInstance;
+type KeyActionProps = {
+  nextPath?: string;
+  prevPath?: string;
 };
 
-const showNextFile = ({ context, currentPath, router }: KeyContextProps) => {
-  const nextPath = context.pathAfter(currentPath);
-  nextPath != undefined ? router.push(nextPath) : alert("no more files");
-};
-
-const showPreviousFile = ({
-  context,
-  currentPath,
-  router,
-}: KeyContextProps) => {
-  const prevPath = context.pathBefore(currentPath);
-  prevPath != undefined ? router.push(prevPath) : alert("no more files");
-};
-
-const KeyActionsWithContext = (props: KeyContextProps) => {
-  useKeyListener({
-    ArrowDown: () => showNextFile(props),
-    ArrowLeft: () => showPreviousFile(props),
-    ArrowRight: () => showNextFile(props),
-    ArrowUp: () => showPreviousFile(props),
-  });
-  return <></>;
-};
-
-export const GlobalKeyActions = (props: { currentPath: string }) => {
+export const KeyActions = (props: KeyActionProps) => {
+  const { nextPath, prevPath } = props;
   const router = useRouter();
-  return (
-    <ServerFilesContextConsumer>
-      {(filesContext) => (
-        <KeyActionsWithContext
-          context={filesContext}
-          currentPath={props.currentPath}
-          router={router}
-        />
-      )}
-    </ServerFilesContextConsumer>
-  );
+
+  const goTo = (path: string) => () => router.push(`/file/${path}`);
+  const noOp = () => {};
+
+  const goToNextMediaPath = !nextPath ? noOp : goTo(nextPath);
+  const goToPreviousMediaPath = !prevPath ? noOp : goTo(prevPath);
+
+  useKeyListener([
+    [goToNextMediaPath, ["ArrowDown", "ArrowRight", "l"]],
+    [goToPreviousMediaPath, ["ArrowLeft", "ArrowUp", "h"]],
+    [toggleFullscreen, ["Enter", "f"]],
+  ]);
+
+  return <></>;
 };

@@ -41,6 +41,14 @@ export type EventKey =
   | "y"
   | "z";
 
-export type KeyEventHandlers = {
-  [key in EventKey]?: () => void;
+export type KeyFunctionMap = { [key in EventKey]?: () => void };
+
+export type FunctionKeyMap = Array<[() => void, EventKey[]]>;
+
+export const fnKeyToKeyFnMap = (fnKeyMap: FunctionKeyMap): KeyFunctionMap => {
+  const keyEventHandlers: KeyFunctionMap = {};
+  fnKeyMap.forEach(([fn, keys]) =>
+    keys.forEach((key) => (keyEventHandlers[key] = fn))
+  );
+  return keyEventHandlers;
 };

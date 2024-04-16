@@ -1,19 +1,24 @@
 "use server";
 
+import { getMetadata } from "@/app/server-actions/actions";
 import styles from "../../page.module.css";
-import { GlobalKeyActions } from "@/app/keyboard-input/key-listener";
+import { KeyActions } from "@/app/keyboard-input/key-listener";
 
-export default async function ShowMediaFilePage({
-  params,
-}: {
+type Props = {
   params: { path: string[] };
-}) {
-  const path = params.path.join("/");
-  const imageAsBackground = { backgroundImage: `url('/${path}')` };
+};
+
+export default async function ShowMediaFilePage({ params }: Props) {
+  const mediaPath = params.path.join("/");
+  const metadata = await getMetadata(mediaPath);
+  const imageAsBackground = { backgroundImage: `url('/${mediaPath}')` };
 
   return (
     <div className={styles.fullscreenImage} style={imageAsBackground}>
-      <GlobalKeyActions currentPath={path} />
+      <KeyActions
+        nextPath={metadata.nextPath}
+        prevPath={metadata.prevPath}
+      ></KeyActions>
     </div>
   );
 }
