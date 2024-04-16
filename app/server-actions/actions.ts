@@ -13,10 +13,10 @@ class FsInfo {
   }
 
   public pathBefore = (currentPath: string) =>
-    this.fileById(this.fileList.indexOf(currentPath) - 1);
+    this.fileById(this.fileList.indexOf(decodeURI(currentPath)) - 1);
 
   public pathAfter = (currentPath: string) =>
-    this.fileById(this.fileList.indexOf(currentPath) + 1);
+    this.fileById(this.fileList.indexOf(decodeURI(currentPath)) + 1);
 }
 
 function listMediaInDir(dir: string): string[] {
