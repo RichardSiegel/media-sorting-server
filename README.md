@@ -3,7 +3,7 @@
 ## TODOs until this is useful:
 - [x] Displaying pictures from a server directory in full-screen
 - [x] Allowing navigation between pictures via arrow keys
-- [ ] Allow navigation via next links and enable caching of next (and previous) images
+- [x] Allow navigation via next links and enable caching of next (and previous) images
 - [ ] Displaying videos from a server directory in full-screen
 - [ ] Permanently move image or video file into a trash directory on the server on key press
 - [ ] Permanently move image or video file into a (new) named directory on the server on key press

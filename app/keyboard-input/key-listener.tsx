@@ -40,7 +40,7 @@ export const KeyActions = (props: KeyActionProps) => {
   const { nextPath, prevPath } = props;
   const router = useRouter();
 
-  const goTo = (path: string) => () => router.push(`/file/${path}`);
+  const goTo = (path: string) => () => router.push(path);
   const noOp = () => {};
 
   const goToNextMediaPath = !nextPath ? noOp : goTo(nextPath);

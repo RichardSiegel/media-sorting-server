@@ -11,12 +11,18 @@ class FsInfo {
   public constructor(fileList: string[]) {
     this.fileList = fileList;
   }
+  public exists = (currentPath: string) =>
+    this.fileList.includes(decodeURI(currentPath));
 
   public pathBefore = (currentPath: string) =>
-    this.fileById(this.fileList.indexOf(decodeURI(currentPath)) - 1);
+    this.exists(currentPath)
+      ? this.fileById(this.fileList.indexOf(decodeURI(currentPath)) - 1)
+      : undefined;
 
   public pathAfter = (currentPath: string) =>
-    this.fileById(this.fileList.indexOf(decodeURI(currentPath)) + 1);
+    this.exists(currentPath)
+      ? this.fileById(this.fileList.indexOf(decodeURI(currentPath)) + 1)
+      : undefined;
 }
 
 function listMediaInDir(dir: string): string[] {
@@ -34,6 +40,7 @@ export async function getMetadata(mediaPath: string) {
   const fsInfo = new FsInfo(listMediaInDir("public"));
   return {
     current: mediaPath,
+    exists: fsInfo.exists(mediaPath),
     nextPath: fsInfo.pathAfter(mediaPath),
     prevPath: fsInfo.pathBefore(mediaPath),
   };

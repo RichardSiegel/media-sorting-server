@@ -9,9 +9,17 @@
 }
 
 .fullscreenImage {
+	/*make the background image cover the container*/
 	height: 100%;
 	width: 100%;
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
+	/*Format the next and previous button*/
+	display: flex;
+	flex-flow: row;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px;
 }
+
