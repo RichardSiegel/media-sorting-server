@@ -11,6 +11,8 @@
 - [ ] Create mobile UI
 - [ ] handle issues with case sensitive file names
 
+Also see the checklist in the [Architecture Notes](./docs/architecture.md)
+
 The checked features have already been implemented and once this checklist is completed more features may follow (e.g. gallery overview).
 
 

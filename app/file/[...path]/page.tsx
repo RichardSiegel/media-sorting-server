@@ -21,7 +21,11 @@ export default async function ShowMediaFilePage({ params }: Props) {
   const imageAsBackground = { backgroundImage: `url('/${mediaPath}')` };
 
   return (
-    <div className={styles.fullscreenImage} style={imageAsBackground}>
+    <div
+      className={styles.fullscreenImage}
+      style={imageAsBackground}
+      data-testid="fullscreenImage"
+    >
       {/* Buttons for click navigation */}
       {prevPath ? <Link href={prefix(prevPath)}>{"<"}</Link> : <div></div>}
       {nextPath ? <Link href={prefix(nextPath)}>{">"}</Link> : <div></div>}

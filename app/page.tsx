@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
-  const fileList = fs.readdirSync("public");
+  const fileList = fs.readdirSync("public").filter((e) => e.endsWith("jpg"));
   return (
     <main className={styles.main}>
       {fileList.map((file) => (

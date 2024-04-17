@@ -3,22 +3,29 @@
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
+    "qa":  "npm run lint && npm run e2e-test",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "e2e-test":  "npx playwright test",
+    "e2e-test-ui":  "npx playwright test --ui",
+    "e2e-test-only-chromium":  "npx playwright test --project=chromium",
+    "e2e-test-debug":  "npx playwright test --debug",
+    "e2e-codegen":  "npx playwright codegen"
   },
   "dependencies": {
+    "next": "14.1.4",
     "react": "^18",
-    "react-dom": "^18",
-    "next": "14.1.4"
+    "react-dom": "^18"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@playwright/test": "^1.43.1",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
-    "eslint-config-next": "14.1.4"
+    "eslint-config-next": "14.1.4",
+    "typescript": "^5"
   }
 }
