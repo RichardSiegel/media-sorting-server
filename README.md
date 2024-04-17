@@ -9,6 +9,7 @@
 - [ ] Permanently move image or video file into a (new) named directory on the server on key press
 - [ ] Allow the configuration of shortcut keys to move a file to configured directories
 - [ ] Create mobile UI
+- [ ] handle issues with case sensitive file names
 
 The checked features have already been implemented and once this checklist is completed more features may follow (e.g. gallery overview).
 
