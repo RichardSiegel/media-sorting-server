@@ -36,6 +36,10 @@ function listMediaInDir(dir: string): string[] {
   return files;
 }
 
+export async function getListOfFiles() {
+  return listMediaInDir("public");
+}
+
 export async function getMetadata(mediaPath: string) {
   const fsInfo = new FsInfo(listMediaInDir("public"));
   return {
