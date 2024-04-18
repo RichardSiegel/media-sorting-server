@@ -33,3 +33,13 @@ When checking for server-side vs. client-side execution and casching etc. build 
 npm run build
 npm run start
 ```
+
+# Testing
+
+Run the whole quality assurance (qa) script or just a sub-kind of tests before you commit your changes.
+See more in [the test documentation](./docs/tests.md)
+
+```bash
+npm run qa
+npm run e2e-test
+```
