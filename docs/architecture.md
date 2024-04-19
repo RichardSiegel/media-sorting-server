@@ -16,9 +16,25 @@ The list below shows the planed and implemented functions:
 - [x] setup e2e tests
 - [x] qa command for quality assurance in package.json
 - [x] setup a unit tests and add them to the qa command
-- [ ] add missing test cases
+- [x] add missing test cases
 - [ ] add support for displaying videos
 - [ ] make sure nothing loads multiple times on the page or on client side if it can be done on the server
 - [ ] add a function to turn the image 90 degrees and trigger it via a page action
 - [ ] add visual feedback for operations performing on media-files
 - [ ] update the docs and the '../README.md' file.
+
+### Images
+
+The original images from the server are used and the likely next images to be viewed are preloaded.
+
+### Videos
+
+The original video files on the server might not be optimized for streaming over a network. All though we might attempt to show the original file in some cases (when nothing better is available), all video files that become available to the server must be automatically optimized and stored in a version optimized for playback over a network.
+
+For playback we will use a plain HTML5 Video-Tag, since that should offer all we need. We also evaluated [next-video](https://www.npmjs.com/package/next-video) but, since it is build to work with dedicated video hosting and optimization services, it would complicate the development of this media server. Thus we opt for the simple video-tags which should get the job done.
+
+Currently implemented:
+- [ ] playback of original files from the server (which might take a while for loading)
+- [ ] automatic playback of optimized versions if they are available
+- [ ] file status overview menu, which shows if a video is currently being processed etc.
+- [ ] automatic preparation of streaming video versions in the background on the server.

@@ -36,14 +36,30 @@ function listMediaInDir(dir: string): string[] {
   return files;
 }
 
+function fileNameToMediaType(filename: string): "other" | "image" | "video" {
+  const extension = filename.split(".").reverse()[0];
+  if (["jpg", "jpeg", "png"].includes(extension)) return "image";
+  if (["mp4"].includes(extension)) return "video";
+  return "other";
+}
+
 export async function getListOfFiles() {
   return listMediaInDir("public");
 }
 
-export async function getMetadata(mediaPath: string) {
-  const fsInfo = new FsInfo(listMediaInDir("public"));
+/**
+ * @description provides all the information the app needs to navigate and display the files from the server.
+ * @param mediaPath references the file path on the server
+ * @param [listFiles=listMediaInDir] the function which reads the file system on the server should only be replaced in the unit tests
+ * */
+export async function getMetadata(
+  mediaPath: string,
+  listFiles = listMediaInDir
+) {
+  const fsInfo = new FsInfo(listFiles("public"));
   return {
     current: mediaPath,
+    mediaType: fileNameToMediaType(mediaPath),
     exists: fsInfo.exists(mediaPath),
     nextPath: fsInfo.pathAfter(mediaPath),
     prevPath: fsInfo.pathBefore(mediaPath),
