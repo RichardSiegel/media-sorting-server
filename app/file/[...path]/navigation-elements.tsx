@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { filePrefix, pagePrefix } from "./prefix";
 import { KeyActions } from "@/app/keyboard-input/key-listener";
+import styles from "../../page.module.css";
 
 function LinkIfSet({
   href,
@@ -11,7 +12,13 @@ function LinkIfSet({
   href?: string;
   children: React.ReactNode;
 }>) {
-  return href ? <Link href={href}>{children}</Link> : <div></div>;
+  return href ? (
+    <Link className={styles.button} href={href}>
+      {children}
+    </Link>
+  ) : (
+    <div></div>
+  );
 }
 
 type Props = Readonly<{
@@ -38,6 +45,9 @@ export default async function NavigationElements(props: Props) {
       {/* Preloading the next images */}
       {<link rel="preload" href={filePrefix(prevPath)} as="image" />}
       {<link rel="preload" href={filePrefix(nextPath)} as="image" />}
+      {/* TODO: check if the type argument should be used here with image|video|text */}
+      {/* https://www.w3schools.com/tags/att_link_type.asp */}
+      {/* https://www.iana.org/assignments/media-types/media-types.xhtml */}
     </>
   );
 }

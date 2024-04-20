@@ -14,22 +14,26 @@ export default async function ShowMediaFilePage({ params }: Props) {
   const metadata = await getMetadata(mediaPath);
   //console.table(metadata); // This is helpful to see what is preloaded
   const { mediaType, nextPath, prevPath } = metadata;
-  const imageAsBackground = {
-    backgroundImage: `url('${filePrefix(mediaPath)}')`,
-  };
 
   switch (mediaType) {
+    case "video":
+      return (
+        <div className={styles.fullscreenVideo}>
+          <div className={styles.videoOverlay}>
+            <NavigationElements prevPath={prevPath} nextPath={nextPath} />
+          </div>
+          <video autoPlay={true} src={filePrefix(mediaPath)} />
+        </div>
+      );
+
     case "image":
       return (
         <div
           className={styles.fullscreenContainer}
-          style={imageAsBackground}
+          style={{ backgroundImage: `url('${filePrefix(mediaPath)}')` }}
           data-testid="fullscreenImage"
         >
-          <NavigationElements
-            prevPath={prevPath}
-            nextPath={nextPath}
-          ></NavigationElements>
+          <NavigationElements prevPath={prevPath} nextPath={nextPath} />
         </div>
       );
 
