@@ -1,17 +1,25 @@
-import styles from "./page.module.css";
-import fs from "fs";
-import Image from "next/image";
-import Link from "next/link";
+"use server";
 
-export default function Home() {
-  const fileList = fs.readdirSync("public").filter((e) => e.endsWith("jpg"));
+import styles from "./page.module.css";
+import { getListOfFiles } from "./server-actions/actions";
+import Gallery from "./gallery";
+
+export default async function Home() {
+  const fileList = await getListOfFiles();
+  const max = 9;
+  const oldestFiles = fileList.filter((_, i) => i < max);
+  const latestFiles = fileList.reverse().filter((_, i) => i < max);
+
   return (
-    <main className={styles.main}>
-      {fileList.map((file) => (
-        <Link key={file} href={`/file/${file}`}>
-          <Image src={`/${file}`} alt={file} width={350} height={350} />
-        </Link>
-      ))}
+    <main>
+      <h1 className={styles.h1}>Latest Files</h1>
+      <Gallery fileList={latestFiles} />
+      {!latestFiles.includes(oldestFiles[0]) && (
+        <>
+          <h1 className={styles.h1}>Oldest Files</h1>{" "}
+          <Gallery fileList={oldestFiles} />
+        </>
+      )}
     </main>
   );
 }

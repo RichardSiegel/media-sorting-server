@@ -1,11 +1,37 @@
-.main {
+.gallery {
 	display: flex;
 	flex-direction: column;
 	flex-flow: wrap;
-	justify-content: center;
+	justify-content: left;
 	align-items: center;
-	padding: 6rem;
-	min-height: 100vh;
+	margin-left: 1vw;
+}
+
+.h1 {
+	font-size: 4vw;
+	margin: 3vw 1vw 2vw 1.5vw;
+	text-align: left;
+}
+
+.galleryImage {
+	/*make the background image cover the container*/
+	height: 31vw;
+	width: 31vw;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+	/*File name*/
+	padding: 3vw;
+	font-size: 2vw;
+	text-align: center;
+	text-shadow: 0px 0px 3px black;
+	background-color: #222;
+	/*Spacing around*/
+	margin: 0.25vw;
+	display: flex;
+	flex-flow: column;
+	justify-content: space-around;
+	align-items: center;
 }
 
 .fullscreenContainer {
