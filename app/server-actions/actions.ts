@@ -65,3 +65,7 @@ export async function getMetadata(
     prevPath: fsInfo.pathBefore(mediaPath),
   };
 }
+
+type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
+
+export type ServerMediaMetadata = UnwrapPromise<ReturnType<typeof getMetadata>>;
