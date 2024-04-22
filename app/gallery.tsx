@@ -16,7 +16,10 @@ export default async function Gallery({ fileList }: { fileList: string[] }) {
           <Link key={file} href={`/file/${file}`}>
             <div className={styles.galleryImage} style={imageAsBackground}>
               <div>
-                {!isImage && file.split("/").map((part) => <p>{part}</p>)}
+                {!isImage &&
+                  file
+                    .split("/")
+                    .map((part, i) => <p key={`part_${i}_${file}`}>{part}</p>)}
               </div>
             </div>
           </Link>
