@@ -5,6 +5,13 @@ import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { EventKey, FunctionKeyMap, fnKeyToKeyFnMap } from "./types";
 import { toggleFullscreen } from "../client-actions/browser-control";
+import {
+  toggleVideoPlay,
+  jumpForwardInVideo,
+  jumpBackwardInVideo,
+  increaseVideoPlaybackSpeed,
+  decreaseVideoPlaybackSpeed,
+} from "../client-actions/video-control";
 
 const useKeyListener = async (functionKeyMap: FunctionKeyMap) => {
   const keyFunctionMap = fnKeyToKeyFnMap(functionKeyMap);
@@ -50,6 +57,11 @@ export const KeyActions = (props: KeyActionProps) => {
     [goToNextMediaPath, ["ArrowDown", "ArrowRight", "l"]],
     [goToPreviousMediaPath, ["ArrowLeft", "ArrowUp", "h"]],
     [toggleFullscreen, ["Enter", "f"]],
+    [toggleVideoPlay, ["k"]],
+    [jumpForwardInVideo, ["."]],
+    [jumpBackwardInVideo, [","]],
+    [increaseVideoPlaybackSpeed, [">"]],
+    [decreaseVideoPlaybackSpeed, ["<"]],
   ]);
 
   return <></>;
