@@ -17,7 +17,8 @@ const useKeyListener = async (functionKeyMap: FunctionKeyMap) => {
   const keyFunctionMap = fnKeyToKeyFnMap(functionKeyMap);
   const callbackForKey = ({ key }: KeyboardEvent) => {
     const keyEventHandler = keyFunctionMap[key as EventKey];
-    keyEventHandler !== undefined && keyEventHandler();
+    keyEventHandler !== undefined &&
+      keyEventHandler.fn(...keyEventHandler.args);
   };
 
   // implement the callback ref pattern
@@ -46,22 +47,17 @@ type KeyActionProps = {
 export const KeyActions = (props: KeyActionProps) => {
   const { nextPath, prevPath } = props;
   const router = useRouter();
-
-  const goTo = (path: string) => () => router.push(path);
-  const noOp = () => {};
-
-  const goToNextMediaPath = !nextPath ? noOp : goTo(nextPath);
-  const goToPreviousMediaPath = !prevPath ? noOp : goTo(prevPath);
+  const goTo = (path: string) => path && router.push(path);
 
   useKeyListener([
-    [goToNextMediaPath, ["ArrowDown", "ArrowRight", "l"]],
-    [goToPreviousMediaPath, ["ArrowLeft", "ArrowUp", "h"]],
-    [toggleFullscreen, ["Enter", "f"]],
-    [toggleVideoPlay, ["k"]],
-    [jumpForwardInVideo, ["."]],
-    [jumpBackwardInVideo, [","]],
-    [increaseVideoPlaybackSpeed, [">"]],
-    [decreaseVideoPlaybackSpeed, ["<"]],
+    [["ArrowDown", "ArrowRight", "l"], goTo, nextPath],
+    [["ArrowLeft", "ArrowUp", "h"], goTo, prevPath],
+    [["Enter", "f"], toggleFullscreen],
+    [["k"], toggleVideoPlay],
+    [["."], jumpForwardInVideo],
+    [[","], jumpBackwardInVideo],
+    [[">"], increaseVideoPlaybackSpeed],
+    [["<"], decreaseVideoPlaybackSpeed],
   ]);
 
   return <></>;

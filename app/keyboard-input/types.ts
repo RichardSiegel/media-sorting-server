@@ -71,14 +71,23 @@ export type EventKey =
   | "Y"
   | "Z";
 
-export type KeyFunctionMap = { [key in EventKey]?: () => void };
+export type KeyFunctionMap = {
+  [key in EventKey]?: { fn: (...args: any) => void; args: any[] };
+};
 
-export type FunctionKeyMap = Array<[() => void, EventKey[]]>;
+/**
+ * @description every entry in this array is made of an array of keys, which
+ * trigger a function, which may be provided with arguments. All such entries
+ * are structured as arrays, containing key(s), function, arguments(optional).
+ */
+export type FunctionKeyMap = Array<
+  [EventKey[], (...args: any) => void, ...any[]]
+>;
 
 export const fnKeyToKeyFnMap = (fnKeyMap: FunctionKeyMap): KeyFunctionMap => {
   const keyEventHandlers: KeyFunctionMap = {};
-  fnKeyMap.forEach(([fn, keys]) =>
-    keys.forEach((key) => (keyEventHandlers[key] = fn))
+  fnKeyMap.forEach(([keys, fn, ...args]) =>
+    keys.forEach((key) => (keyEventHandlers[key] = { fn, args }))
   );
   return keyEventHandlers;
 };
