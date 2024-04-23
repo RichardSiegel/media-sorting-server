@@ -9,3 +9,4 @@ To run all tests use `npm run qa`. Please be aware that some features may need m
 | Preload next and previous image I may navigate to.         | MANUAL TESTING               |
 | Shortcuts to toggle full-screen                            | MANUAL TESTING               |
 | Different views depending on file type image, video, other | MANUAL TESTING / TODO        |
+| Video control shortcuts                                    | MANUAL TESTING / TODO        |
