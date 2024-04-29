@@ -34,4 +34,15 @@ describe("fnKeyToKeyFnMap", () => {
     };
     expect(fnKeyToKeyFnMap(fnKeyMap)).toEqual(keyFnMap);
   });
+
+  it("throws error when duplicate keys are present", () => {
+    const fnKeyMap: FunctionKeyMap = [
+      [[".", "Enter"], () => {}],
+      [["1", "b"], () => {}],
+      [["2", "Enter"], () => {}],
+    ];
+    expect(() => fnKeyToKeyFnMap(fnKeyMap)).toThrowError(
+      'The key "Enter" was configured to trigger multiple actions, only one action per key is allowed.'
+    );
+  });
 });

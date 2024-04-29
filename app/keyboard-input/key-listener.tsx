@@ -60,7 +60,7 @@ export const KeyActions = ({ metadata, toggleFavorite }: KeyActionProps) => {
     [[","], jumpBackwardInVideo],
     [[">"], increaseVideoPlaybackSpeed],
     [["<"], decreaseVideoPlaybackSpeed],
-    [["s", "f"], toggleFavorite],
+    [["s"], toggleFavorite],
   ]);
 
   return <></>;

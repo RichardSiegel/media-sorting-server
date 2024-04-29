@@ -84,10 +84,16 @@ export type FunctionKeyMap = Array<
   [EventKey[], (...args: any) => void, ...any[]]
 >;
 
+const multipleKeysError = (key: string) =>
+  `The key "${key}" was configured to trigger multiple actions, only one action per key is allowed.`;
+
 export const fnKeyToKeyFnMap = (fnKeyMap: FunctionKeyMap): KeyFunctionMap => {
   const keyEventHandlers: KeyFunctionMap = {};
   fnKeyMap.forEach(([keys, fn, ...args]) =>
-    keys.forEach((key) => (keyEventHandlers[key] = { fn, args }))
+    keys.forEach((key) => {
+      if (keyEventHandlers[key]) throw Error(multipleKeysError(key));
+      keyEventHandlers[key] = { fn, args };
+    })
   );
   return keyEventHandlers;
 };
