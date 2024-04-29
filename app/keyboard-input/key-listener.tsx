@@ -12,6 +12,9 @@ import {
   increaseVideoPlaybackSpeed,
   decreaseVideoPlaybackSpeed,
 } from "../client-actions/video-control";
+import { ServerMediaMetadata } from "../server-actions/actions";
+import { pagePrefix } from "../file/[...path]/prefix";
+import { getMediaState, setMediaState } from "../client-actions/session-state";
 
 const useKeyListener = async (functionKeyMap: FunctionKeyMap) => {
   const keyFunctionMap = fnKeyToKeyFnMap(functionKeyMap);
@@ -40,24 +43,30 @@ const useKeyListener = async (functionKeyMap: FunctionKeyMap) => {
 };
 
 type KeyActionProps = {
-  nextPath?: string;
-  prevPath?: string;
+  metadata: ServerMediaMetadata;
 };
 
-export const KeyActions = (props: KeyActionProps) => {
-  const { nextPath, prevPath } = props;
+const toggleFavorite = (path: string) => {
+  const isFavorite = getMediaState(path, "isFavorite");
+  setMediaState(path, "isFavorite", !isFavorite);
+  console.log(window.sessionStorage.getItem("state"));
+};
+
+export const KeyActions = ({ metadata }: KeyActionProps) => {
+  const { current, nextPath, prevPath } = metadata;
   const router = useRouter();
   const goTo = (path: string) => path && router.push(path);
 
   useKeyListener([
-    [["ArrowDown", "ArrowRight", "l"], goTo, nextPath],
-    [["ArrowLeft", "ArrowUp", "h"], goTo, prevPath],
+    [["ArrowDown", "ArrowRight", "l"], goTo, pagePrefix(nextPath)],
+    [["ArrowLeft", "ArrowUp", "h"], goTo, pagePrefix(prevPath)],
     [["Enter", "f"], toggleFullscreen],
     [["k"], toggleVideoPlay],
     [["."], jumpForwardInVideo],
     [[","], jumpBackwardInVideo],
     [[">"], increaseVideoPlaybackSpeed],
     [["<"], decreaseVideoPlaybackSpeed],
+    [["s"], toggleFavorite, current],
   ]);
 
   return <></>;

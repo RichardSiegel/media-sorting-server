@@ -37,10 +37,7 @@ export default async function NavigationElements(props: Props) {
       <LinkIfSet href={pagePrefix(metadata.nextPath)}>{">"}</LinkIfSet>
 
       {/* Add key shortcuts */}
-      <KeyActions
-        nextPath={pagePrefix(metadata.nextPath)}
-        prevPath={pagePrefix(metadata.prevPath)}
-      ></KeyActions>
+      <KeyActions metadata={metadata}></KeyActions>
 
       {/* Preloading the next images */}
       {<link rel="preload" href={filePrefix(metadata.prevPath)} as="image" />}

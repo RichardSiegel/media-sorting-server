@@ -17,7 +17,7 @@ The list below shows the planed and implemented functions:
 - [x] qa command for quality assurance in package.json
 - [x] setup a unit tests and add them to the qa command
 - [x] add missing test cases
-- [ ] add support for displaying videos
+- [x] add support for displaying videos
 - [ ] make sure nothing loads multiple times on the page or on client side if it can be done on the server
 - [ ] add a function to turn the image 90 degrees and trigger it via a page action
 - [ ] add visual feedback for operations performing on media-files
