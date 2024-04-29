@@ -14,7 +14,6 @@ import {
 } from "../client-actions/video-control";
 import { ServerMediaMetadata } from "../server-actions/actions";
 import { pagePrefix } from "../file/[...path]/prefix";
-import { getMediaState, setMediaState } from "../client-actions/session-state";
 
 const useKeyListener = async (functionKeyMap: FunctionKeyMap) => {
   const keyFunctionMap = fnKeyToKeyFnMap(functionKeyMap);
@@ -44,16 +43,11 @@ const useKeyListener = async (functionKeyMap: FunctionKeyMap) => {
 
 type KeyActionProps = {
   metadata: ServerMediaMetadata;
+  toggleFavorite: () => void;
 };
 
-const toggleFavorite = (path: string) => {
-  const isFavorite = getMediaState(path, "isFavorite");
-  setMediaState(path, "isFavorite", !isFavorite);
-  console.log(window.sessionStorage.getItem("state"));
-};
-
-export const KeyActions = ({ metadata }: KeyActionProps) => {
-  const { current, nextPath, prevPath } = metadata;
+export const KeyActions = ({ metadata, toggleFavorite }: KeyActionProps) => {
+  const { nextPath, prevPath } = metadata;
   const router = useRouter();
   const goTo = (path: string) => path && router.push(path);
 
@@ -66,7 +60,7 @@ export const KeyActions = ({ metadata }: KeyActionProps) => {
     [[","], jumpBackwardInVideo],
     [[">"], increaseVideoPlaybackSpeed],
     [["<"], decreaseVideoPlaybackSpeed],
-    [["s"], toggleFavorite, current],
+    [["s", "f"], toggleFavorite],
   ]);
 
   return <></>;

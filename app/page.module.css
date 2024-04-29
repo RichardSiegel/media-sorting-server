@@ -82,3 +82,12 @@
 	padding: 20px;
 	z-index: 9999;
 }
+
+.likeSwitch { 
+	cursor: pointer;
+	text-shadow: 0px 0px 10px black, 0px 0px 3px black;
+	position: absolute;
+	bottom: 0px;
+	right: 25px;
+ }
+

@@ -1,10 +1,15 @@
-"use server";
+"use client";
 
 import Link from "next/link";
 import { filePrefix, pagePrefix } from "./prefix";
 import { KeyActions } from "@/app/keyboard-input/key-listener";
 import styles from "../../page.module.css";
 import { ServerMediaMetadata } from "@/app/server-actions/actions";
+import { useState } from "react";
+import {
+  getMediaState,
+  setMediaState,
+} from "@/app/client-actions/session-state";
 
 function LinkIfSet({
   href,
@@ -27,18 +32,32 @@ type Props = Readonly<{
   children?: React.ReactNode;
 }>;
 
-export default async function NavigationElements(props: Props) {
+export default function NavigationElements(props: Props) {
   const { metadata, children } = props;
+  const [isFavorite, setIsFavorite] = useState(
+    getMediaState(metadata.current, "isFavorite")
+  );
+
+  const toggleFavorite = () => {
+    setMediaState(metadata.current, "isFavorite", !isFavorite);
+    setIsFavorite(!isFavorite);
+  };
+
   return (
     <>
+      {/* Toggle/show meta infos about images */}
+      <div className={styles.likeSwitch} onClick={toggleFavorite}>
+        {isFavorite ? "Liked <3" : "Like"}
+      </div>
       {/* Buttons for click navigation and optinal content */}
       <LinkIfSet href={pagePrefix(metadata.prevPath)}>{"<"}</LinkIfSet>
       <div>{children}</div>
       <LinkIfSet href={pagePrefix(metadata.nextPath)}>{">"}</LinkIfSet>
-
       {/* Add key shortcuts */}
-      <KeyActions metadata={metadata}></KeyActions>
-
+      <KeyActions
+        metadata={metadata}
+        toggleFavorite={toggleFavorite}
+      ></KeyActions>
       {/* Preloading the next images */}
       {<link rel="preload" href={filePrefix(metadata.prevPath)} as="image" />}
       {<link rel="preload" href={filePrefix(metadata.nextPath)} as="image" />}

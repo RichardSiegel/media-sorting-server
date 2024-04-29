@@ -11,14 +11,18 @@ type MediaStateCollection = { [key in string]?: MediaStateDir };
  * */
 export const updateSessionState = (
   state: MediaStateCollection,
-  browserWindow = window
+  // The typeof window !== "undefined" check is needed to eliminate runtime errors on the server
+  browserWindow = typeof window !== "undefined" ? window : undefined
 ) => browserWindow?.sessionStorage?.setItem("state", JSON.stringify(state));
 
 /**
  * @description Loads all of the media states kept in the current browser session.
  * @param browserWindow ONLY FOR MOCKING in unit tests
  * */
-export const loadSessionState = (browserWindow = window) => {
+export const loadSessionState = (
+  // The typeof window !== "undefined" check is needed to eliminate runtime errors on the server
+  browserWindow = typeof window !== "undefined" ? window : undefined
+) => {
   try {
     return JSON.parse(
       browserWindow?.sessionStorage?.getItem("state") || "{}"
@@ -30,8 +34,8 @@ export const loadSessionState = (browserWindow = window) => {
 
 /**
  * @description Loads a specific media state kept in the current browser session.
- * @param mediaPath the path to the file whose state will be returned
- * @param stateName the specific state value that will be returned
+ * @param mediaPath path to the file whose state will be returned
+ * @param stateName key to the specific state value that will be returned
  * @param getStateCollection ONLY FOR MOCKING in unit tests
  * */
 export const getMediaState = (
@@ -51,8 +55,8 @@ const extractPathAndName = (mediaPath: string) => {
 
 /**
  * @description Saves a specific media state in the current browser session.
- * @param mediaPath the path to the file whose state will be modified
- * @param stateName the specific state value that will be modified
+ * @param mediaPath path to the file whose state will be modified
+ * @param stateName key to the specific state value that will be modified
  * @param getStateCollection ONLY FOR MOCKING in unit tests
  * @param setStateCollection ONLY FOR MOCKING in unit tests
  * */
