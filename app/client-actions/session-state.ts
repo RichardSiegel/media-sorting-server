@@ -2,31 +2,39 @@ export const defaultMediaState = { isFavorite: false };
 type MediaState = typeof defaultMediaState;
 type MediaStateKey = keyof MediaState;
 type MediaStateDir = { [key in string]?: MediaState };
-type MediaStateCollection = { [key in string]?: MediaStateDir };
 
 /**
- * @description This overwrites all of the media states kept in the current browser session.
- * @param state the new state for all media items on the page
+ * @description This overwrites the media states for the specified directory.
+ * @param dirName name of the directory used as session storage item identifier.
+ * @param state the new state for media items in directory.
  * @param browserWindow ONLY FOR MOCKING in unit tests
  * */
 export const updateSessionState = (
-  state: MediaStateCollection,
+  dirName: string,
+  state: MediaStateDir,
   // The typeof window !== "undefined" check is needed to eliminate runtime errors on the server
   browserWindow = typeof window !== "undefined" ? window : undefined
-) => browserWindow?.sessionStorage?.setItem("state", JSON.stringify(state));
+) =>
+  browserWindow?.sessionStorage?.setItem(
+    dirName !== "" ? dirName : ".",
+    JSON.stringify(state)
+  );
 
 /**
- * @description Loads all of the media states kept in the current browser session.
+ * @description Loads all of the media states kept in the current browser session for the specified directory.
+ * @param dirName name of the directory used as session storage item identifier.
  * @param browserWindow ONLY FOR MOCKING in unit tests
  * */
 export const loadSessionState = (
+  dirName: string,
   // The typeof window !== "undefined" check is needed to eliminate runtime errors on the server
   browserWindow = typeof window !== "undefined" ? window : undefined
 ) => {
   try {
     return JSON.parse(
-      browserWindow?.sessionStorage?.getItem("state") || "{}"
-    ) as MediaStateCollection;
+      browserWindow?.sessionStorage?.getItem(dirName !== "" ? dirName : ".") ||
+        "{}"
+    ) as MediaStateDir;
   } catch {
     return {};
   }
@@ -36,15 +44,15 @@ export const loadSessionState = (
  * @description Loads a specific media state kept in the current browser session.
  * @param mediaPath path to the file whose state will be returned
  * @param stateName key to the specific state value that will be returned
- * @param getStateCollection ONLY FOR MOCKING in unit tests
+ * @param getStateDir ONLY FOR MOCKING in unit tests
  * */
 export const getMediaState = (
   mediaPath: string,
   stateName: MediaStateKey,
-  getStateCollection = loadSessionState
+  getStateDir = loadSessionState
 ) => {
   const { dirPath: dir, fileName: file } = extractPathAndName(mediaPath);
-  return (getStateCollection()[dir]?.[file] || defaultMediaState)[stateName];
+  return (getStateDir(dir)[file] || defaultMediaState)[stateName];
 };
 
 const extractPathAndName = (mediaPath: string) => {
@@ -57,23 +65,21 @@ const extractPathAndName = (mediaPath: string) => {
  * @description Saves a specific media state in the current browser session.
  * @param mediaPath path to the file whose state will be modified
  * @param stateName key to the specific state value that will be modified
- * @param getStateCollection ONLY FOR MOCKING in unit tests
+ * @param getStateDir ONLY FOR MOCKING in unit tests
  * @param setStateCollection ONLY FOR MOCKING in unit tests
  * */
 export const setMediaState = <Key extends MediaStateKey>(
   mediaPath: string,
   stateName: Key,
   value: MediaState[Key],
-  getStateCollection = loadSessionState,
+  getStateDir = loadSessionState,
   setStateCollection = updateSessionState
 ) => {
   const { dirPath, fileName } = extractPathAndName(mediaPath);
-  const stateCollection = getStateCollection();
-  const oldStateInFile =
-    stateCollection[dirPath]?.[fileName] ?? defaultMediaState;
-  const oldStateInDir = stateCollection[dirPath] ?? {};
+  const oldStateInDir = getStateDir(dirPath) ?? {};
+  const oldStateInFile = oldStateInDir[fileName] ?? defaultMediaState;
   const newStateInFile = { ...oldStateInFile, [stateName]: value };
   const newStateInDir = { ...oldStateInDir, [fileName]: newStateInFile };
-  stateCollection[dirPath] = newStateInDir;
-  setStateCollection(stateCollection);
+  setStateCollection(dirPath, newStateInDir);
+  // TODO save on server
 };
