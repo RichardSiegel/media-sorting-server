@@ -1,6 +1,11 @@
 "use server";
 import fs from "fs";
 import path from "path";
+import { loadMediaStateFromServer } from "./media-state";
+import { extractPathAndName } from "../utils";
+
+const isVisibleFile = (filePath: string) =>
+  !filePath.split("/").reverse()[0].startsWith(".");
 
 class FsInfo {
   private fileList: string[];
@@ -9,7 +14,7 @@ class FsInfo {
     id < this.fileList.length && id >= 0 ? this.fileList[id] : undefined;
 
   public constructor(fileList: string[]) {
-    this.fileList = fileList;
+    this.fileList = fileList.filter(isVisibleFile);
   }
   public exists = (currentPath: string) =>
     this.fileList.includes(decodeURI(currentPath));
@@ -50,19 +55,29 @@ export async function getListOfFiles() {
 /**
  * @description provides all the information the app needs to navigate and display the files from the server.
  * @param mediaPath references the file path on the server
+ * @param timestamp must be set to make sure caching will not hide state changes
  * @param [listFiles=listMediaInDir] the function which reads the file system on the server should only be replaced in the unit tests
  * */
 export async function getMetadata(
   mediaPath: string,
+  timestamp: Date,
   listFiles = listMediaInDir
 ) {
   const fsInfo = new FsInfo(listFiles("public"));
+  const { dirPath, fileName } = extractPathAndName(mediaPath);
+  const mediaState = await loadMediaStateFromServer(
+    dirPath,
+    fileName,
+    new Date()
+  );
   return {
+    timeOfRequest: timestamp,
     current: mediaPath,
     mediaType: fileNameToMediaType(mediaPath),
     exists: fsInfo.exists(mediaPath),
     nextPath: fsInfo.pathAfter(mediaPath),
     prevPath: fsInfo.pathBefore(mediaPath),
+    isFavorite: mediaState.isFavorite,
   };
 }
 

@@ -13,3 +13,4 @@ The table below lists the page behavious we want to ensure. Unit-tests are not l
 | Different views depending on file type image, video, other | MANUAL TESTING / TODO        |
 | Video control shortcuts                                    | MANUAL TESTING / TODO        |
 | Marking images and videos as favorites                     | MANUAL TESTING / TODO        |
+| Like and unlike (from multiple tabs/browsers)              | MANUAL TESTING / TODO        |

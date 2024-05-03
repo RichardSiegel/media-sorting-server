@@ -5,11 +5,7 @@ import { filePrefix, pagePrefix } from "./prefix";
 import { KeyActions } from "@/app/keyboard-input/key-listener";
 import styles from "../../page.module.css";
 import { ServerMediaMetadata } from "@/app/server-actions/actions";
-import { useState } from "react";
-import {
-  getMediaState,
-  setMediaState,
-} from "@/app/client-actions/session-state";
+import { useMediaStateServerSync } from "./media-state-server-sync-hook";
 
 function LinkIfSet({
   href,
@@ -34,14 +30,7 @@ type Props = Readonly<{
 
 export default function NavigationElements(props: Props) {
   const { metadata, children } = props;
-  const [isFavorite, setIsFavorite] = useState(
-    getMediaState(metadata.current, "isFavorite")
-  );
-
-  const toggleFavorite = () => {
-    setMediaState(metadata.current, "isFavorite", !isFavorite);
-    setIsFavorite(!isFavorite);
-  };
+  const { isFavorite, toggleFavorite } = useMediaStateServerSync(metadata);
 
   return (
     <>

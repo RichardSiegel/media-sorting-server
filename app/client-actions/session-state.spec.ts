@@ -1,6 +1,5 @@
 import { expect, it, beforeEach, describe, vi } from "vitest";
 import {
-  defaultMediaState,
   getMediaState,
   loadSessionState,
   setMediaState,
@@ -151,15 +150,14 @@ describe("getMediaState function", () => {
     vi.clearAllMocks();
   });
 
-  it("should return the default state if nothing is set yet", () => {
+  it("should return the null if nothing is set yet", () => {
     const mediaPath = "path/to/media";
     const stateName = "isFavorite";
-    const expectedDefaultState = defaultMediaState[stateName];
 
     const result = getMediaState(mediaPath, stateName, loadSessionStateMock);
 
     expect(loadSessionStateMock).toHaveBeenCalled();
-    expect(result).toEqual(expectedDefaultState);
+    expect(result).toBeNull();
   });
 
   it("should return the true state if it is set", () => {
