@@ -14,6 +14,8 @@ import {
 } from "../client-actions/video-control";
 import { ServerMediaMetadata } from "../server-actions/actions";
 import { pagePrefix } from "../file/[...path]/prefix";
+import { rotateImage } from "../client-actions/image-control";
+import { useMediaStateServerSync } from "../file/[...path]/media-state-server-sync-hook";
 
 const useKeyListener = async (functionKeyMap: FunctionKeyMap) => {
   const keyFunctionMap = fnKeyToKeyFnMap(functionKeyMap);
@@ -43,10 +45,10 @@ const useKeyListener = async (functionKeyMap: FunctionKeyMap) => {
 
 type KeyActionProps = {
   metadata: ServerMediaMetadata;
-  toggleFavorite: () => void;
+  mediaStateHook: ReturnType<typeof useMediaStateServerSync>;
 };
 
-export const KeyActions = ({ metadata, toggleFavorite }: KeyActionProps) => {
+export const KeyActions = ({ metadata, mediaStateHook }: KeyActionProps) => {
   const { nextPath, prevPath } = metadata;
   const router = useRouter();
   const goTo = (path: string) => path && router.push(path);
@@ -60,7 +62,8 @@ export const KeyActions = ({ metadata, toggleFavorite }: KeyActionProps) => {
     [[","], jumpBackwardInVideo],
     [[">"], increaseVideoPlaybackSpeed],
     [["<"], decreaseVideoPlaybackSpeed],
-    [["s"], toggleFavorite],
+    [["s"], mediaStateHook.toggleFavorite],
+    [["r", "t"], mediaStateHook.rotateMedia],
   ]);
 
   return <></>;

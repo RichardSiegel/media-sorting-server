@@ -9,17 +9,19 @@ import { useMediaStateServerSync } from "./media-state-server-sync-hook";
 
 function LinkIfSet({
   href,
+  testid,
   children,
 }: Readonly<{
   href?: string;
+  testid?: string;
   children: React.ReactNode;
 }>) {
   return href ? (
-    <Link className={styles.button} href={href}>
+    <Link className={styles.button} href={href} data-testid={testid}>
       {children}
     </Link>
   ) : (
-    <div></div>
+    <div data-testid={testid}></div>
   );
 }
 
@@ -30,22 +32,32 @@ type Props = Readonly<{
 
 export default function NavigationElements(props: Props) {
   const { metadata, children } = props;
-  const { state, toggleFavorite } = useMediaStateServerSync(metadata);
+  const mediaStateHook = useMediaStateServerSync(metadata);
 
   return (
-    <>
-      {/* Toggle/show meta infos about images */}
-      <div className={styles.likeSwitch} onClick={toggleFavorite}>
-        {state.isFavorite ? "Liked <3" : "Like"}
+    <div
+      className={styles.controlOverlay}
+      ref={mediaStateHook.resizeTriggerElementRef}
+    >
+      {/* Buttons/show meta infos about images */}
+      <div
+        className={styles.likeSwitch}
+        onClick={mediaStateHook.toggleFavorite}
+      >
+        {mediaStateHook.state.isFavorite ? "Liked <3" : "Like"}
       </div>
       {/* Buttons for click navigation and optinal content */}
-      <LinkIfSet href={pagePrefix(metadata.prevPath)}>{"<"}</LinkIfSet>
+      <LinkIfSet href={pagePrefix(metadata.prevPath)} testid="navigate-prev">
+        {"<"}
+      </LinkIfSet>
       <div>{children}</div>
-      <LinkIfSet href={pagePrefix(metadata.nextPath)}>{">"}</LinkIfSet>
+      <LinkIfSet href={pagePrefix(metadata.nextPath)} testid="navigate-next">
+        {">"}
+      </LinkIfSet>
       {/* Add key shortcuts */}
       <KeyActions
         metadata={metadata}
-        toggleFavorite={toggleFavorite}
+        mediaStateHook={mediaStateHook}
       ></KeyActions>
       {/* Preloading the next images */}
       {<link rel="preload" href={filePrefix(metadata.prevPath)} as="image" />}
@@ -53,6 +65,6 @@ export default function NavigationElements(props: Props) {
       {/* TODO: check if the type argument should be used here with image|video|text */}
       {/* https://www.w3schools.com/tags/att_link_type.asp */}
       {/* https://www.iana.org/assignments/media-types/media-types.xhtml */}
-    </>
+    </div>
   );
 }

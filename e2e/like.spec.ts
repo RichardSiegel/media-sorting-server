@@ -19,6 +19,7 @@ test("the page should save like states and allow changes", async ({ page }) => {
   await page.getByRole("link", { name: "<" }).click();
   await page.getByText("Like").click();
   await page.getByRole("link", { name: "<" }).click();
+  await page.waitForTimeout(500);
   expect(
     JSON.parse(
       fs.readFileSync("public/.media-sorting-server-state.json").toString()
@@ -41,6 +42,7 @@ test("the page should save like states and allow changes", async ({ page }) => {
   await page.getByRole("link", { name: ">" }).click();
   await page.getByText("Liked <").click();
   expect(await page.getByText("Like")).not.toBeNull();
+  await page.waitForTimeout(500);
   expect(
     JSON.parse(
       fs.readFileSync("public/.media-sorting-server-state.json").toString()

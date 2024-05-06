@@ -49,20 +49,22 @@ test.describe("the /file/ pages", () => {
     page: Page,
     buttons: "both" | "only-next" | "only-previous"
   ) => {
-    const btnSymbols = await page.getByTestId("fullscreenImage").textContent();
+    const btnPrevText = await page.getByTestId("navigate-prev").textContent();
+    const btnNextText = await page.getByTestId("navigate-next").textContent();
     switch (buttons) {
       case "both": {
-        expect(btnSymbols).toContain("<>");
+        expect(btnNextText).toContain(">");
+        expect(btnPrevText).toContain("<");
         break;
       }
       case "only-next": {
-        expect(btnSymbols).not.toContain("<>");
-        expect(btnSymbols).toContain(">");
+        expect(btnNextText).toContain(">");
+        expect(btnPrevText).not.toContain("<");
         break;
       }
       case "only-previous": {
-        expect(btnSymbols).not.toContain("<>");
-        expect(btnSymbols).toContain("<");
+        expect(btnNextText).not.toContain(">");
+        expect(btnPrevText).toContain("<");
         break;
       }
     }

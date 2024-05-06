@@ -4,6 +4,7 @@ import {
   loadSessionState,
   setMediaState,
   updateSessionState,
+  defaultMediaState,
 } from "./session-state";
 
 const mockSessionStorage = { setItem: vi.fn(), getItem: vi.fn() };
@@ -18,7 +19,7 @@ describe("updateSessionState function", () => {
   });
 
   it("should store the provided state in the session storage", () => {
-    const state = { media: { isFavorite: true } };
+    const state = { media: { ...defaultMediaState, isFavorite: true } };
     updateSessionState("path/to", state, mockWindow);
     expect(mockSessionStorage.setItem).toHaveBeenCalledWith(
       "path/to",
@@ -27,7 +28,7 @@ describe("updateSessionState function", () => {
   });
 
   it("should store the provided state in the session storage '.' if dir is an empty string", () => {
-    const state = { media: { isFavorite: true } };
+    const state = { media: { ...defaultMediaState, isFavorite: true } };
     updateSessionState("", state, mockWindow);
     expect(mockSessionStorage.setItem).toHaveBeenCalledWith(
       ".",
@@ -89,10 +90,18 @@ describe("setMediaState function", () => {
     const mediaPath = "path/to/media.jpg";
     const stateName = "isFavorite";
     const value = true;
-    const initialState = { "someOtherFile.mp4": { isFavorite: false } };
+    const initialState = {
+      "someOtherFile.mp4": {
+        ...defaultMediaState,
+        isFavorite: false,
+      },
+    };
     const expectedStateDir = {
       ...initialState,
-      "media.jpg": { isFavorite: true },
+      "media.jpg": {
+        ...defaultMediaState,
+        isFavorite: true,
+      },
     };
 
     loadSessionStateMock.mockReturnValueOnce(initialState);
@@ -118,11 +127,13 @@ describe("setMediaState function", () => {
     const value = true;
     const initialState = {
       media: {
+        ...defaultMediaState,
         // Complete state for the 'media' file
       },
     };
     const expectedStateDir = {
       media: {
+        ...defaultMediaState,
         isFavorite: true,
       },
     };
@@ -165,6 +176,7 @@ describe("getMediaState function", () => {
     const stateName = "isFavorite";
     const initialState = {
       media: {
+        ...defaultMediaState,
         isFavorite: true,
       },
     };
@@ -183,6 +195,7 @@ describe("getMediaState function", () => {
     const stateName = "isFavorite";
     const initialState = {
       media: {
+        ...defaultMediaState,
         isFavorite: false,
       },
     };

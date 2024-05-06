@@ -1,3 +1,4 @@
+import { rotateImage } from "@/app/client-actions/image-control";
 import {
   MediaState,
   getMediaStatesForFile,
@@ -9,7 +10,8 @@ import {
   updateMediaStateOnServer,
 } from "@/app/server-actions/media-state";
 import { extractPathAndName } from "@/app/utils";
-import { useEffect, useState } from "react";
+import useResizeObserver from "@react-hook/resize-observer";
+import { useEffect, useRef, useState } from "react";
 
 export const useMediaStateServerSync = (metadata: ServerMediaMetadata) => {
   const { dirPath, fileName } = extractPathAndName(metadata.current);
@@ -37,8 +39,11 @@ export const useMediaStateServerSync = (metadata: ServerMediaMetadata) => {
     loadMediaStateFromServer(dirPath, fileName, new Date()).then((state) => {
       setMediaStatesForFile(metadata.current, state);
       setState(state);
+      rotateImage(state.rotation);
     });
   };
+  const resizeTriggerElementRef = useRef(null);
+  useResizeObserver(resizeTriggerElementRef, () => rotateImage(state.rotation));
 
   // only when this component is loaded
   useEffect(updateClientWithChangesFromServer, []);
@@ -48,6 +53,12 @@ export const useMediaStateServerSync = (metadata: ServerMediaMetadata) => {
     setStateServerSync({ ...state, isFavorite: !state.isFavorite });
   };
 
+  const rotateMedia = () => {
+    const rotation = ((state.rotation + 90) % 360) as 0 | 90 | 180 | 270;
+    setStateServerSync({ ...state, rotation });
+    rotateImage(rotation);
+  };
+
   // state = {isFavorite,...}
-  return { state, toggleFavorite };
+  return { resizeTriggerElementRef, state, toggleFavorite, rotateMedia };
 };

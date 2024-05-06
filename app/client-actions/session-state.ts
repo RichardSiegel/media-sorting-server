@@ -1,6 +1,9 @@
 import { extractPathAndName, isRunOnServer } from "../utils";
 
-export const defaultMediaState = { isFavorite: false };
+export const defaultMediaState = {
+  isFavorite: false,
+  rotation: 0 as 0 | 90 | 180 | 270,
+};
 export type MediaState = typeof defaultMediaState;
 type MediaStateKey = keyof MediaState;
 export type MediaStateDir = { [key in string]?: MediaState };
