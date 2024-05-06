@@ -77,7 +77,7 @@ export async function getMetadata(
     exists: fsInfo.exists(mediaPath),
     nextPath: fsInfo.pathAfter(mediaPath),
     prevPath: fsInfo.pathBefore(mediaPath),
-    isFavorite: mediaState.isFavorite,
+    state: mediaState,
   };
 }
 

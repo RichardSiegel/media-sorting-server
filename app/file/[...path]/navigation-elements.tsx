@@ -30,13 +30,13 @@ type Props = Readonly<{
 
 export default function NavigationElements(props: Props) {
   const { metadata, children } = props;
-  const { isFavorite, toggleFavorite } = useMediaStateServerSync(metadata);
+  const { state, toggleFavorite } = useMediaStateServerSync(metadata);
 
   return (
     <>
       {/* Toggle/show meta infos about images */}
       <div className={styles.likeSwitch} onClick={toggleFavorite}>
-        {isFavorite ? "Liked <3" : "Like"}
+        {state.isFavorite ? "Liked <3" : "Like"}
       </div>
       {/* Buttons for click navigation and optinal content */}
       <LinkIfSet href={pagePrefix(metadata.prevPath)}>{"<"}</LinkIfSet>

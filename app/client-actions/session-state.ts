@@ -49,16 +49,20 @@ export const loadSessionState = (
 export const getMediaState = (
   mediaPath: string,
   stateName: MediaStateKey,
+  lss = loadSessionState
+) => getMediaStatesForFile(mediaPath, lss)?.[stateName] ?? null;
+
+/**
+ * @description Loads the media state kept in the current browser session for a file.
+ * @param mediaPath path to the file whose state will be returned
+ * @param getStateDir ONLY FOR MOCKING in unit tests
+ * */
+export const getMediaStatesForFile = (
+  mediaPath: string,
   getStateDir = loadSessionState
 ) => {
   const { dirPath, fileName } = extractPathAndName(mediaPath);
-  if (isRunOnServer) {
-    return null;
-    //return await loadMediaStateFromServer(dirPath, stateName);
-  } else {
-    return getStateDir(dirPath)[fileName]?.[stateName] ?? null;
-    //return (getStateDir(dirPath)[fileName] || defaultMediaState)[stateName];
-  }
+  return isRunOnServer ? null : getStateDir(dirPath)[fileName] ?? null;
 };
 
 /**
@@ -68,18 +72,32 @@ export const getMediaState = (
  * @param getStateDir ONLY FOR MOCKING in unit tests
  * @param setStateDir ONLY FOR MOCKING in unit tests
  * */
-
 export const setMediaState = <Key extends MediaStateKey>(
   mediaPath: string,
   stateName: Key,
   value: MediaState[Key],
+  lss = loadSessionState,
+  uss = updateSessionState
+) => setMediaStatesForFile(mediaPath, { [stateName]: value }, lss, uss);
+
+/**
+ * @description Saves the media state in the current browser session for a file.
+ * @param mediaPath path to the file whose state will be modified
+ * @param stateChanges state object holding only the values that should be updated
+ * @param getStateDir ONLY FOR MOCKING in unit tests
+ * @param setStateDir ONLY FOR MOCKING in unit tests
+ * */
+export const setMediaStatesForFile = (
+  mediaPath: string,
+  stateChanges: Partial<MediaState>,
   getStateDir = loadSessionState,
   setStateDir = updateSessionState
 ) => {
   const { dirPath, fileName } = extractPathAndName(mediaPath);
   const oldStateInDir = getStateDir(dirPath) ?? {};
   const oldStateInFile = oldStateInDir[fileName] ?? defaultMediaState;
-  const newStateInFile = { ...oldStateInFile, [stateName]: value };
+  const newStateInFile = { ...oldStateInFile, ...stateChanges };
   const newStateInDir = { ...oldStateInDir, [fileName]: newStateInFile };
   setStateDir(dirPath, newStateInDir);
+  return newStateInDir;
 };
