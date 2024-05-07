@@ -34,9 +34,11 @@ function listMediaInDir(dir: string): string[] {
   let files: string[] = [];
   fs.readdirSync(dir).forEach((file) => {
     const subPath = path.join(dir, file);
-    if (fs.statSync(subPath).isDirectory())
-      files = [...files, ...listMediaInDir(subPath)];
-    else files.push(subPath.replace(/^public\//, ""));
+    if (!file.startsWith(".")) {
+      if (fs.statSync(subPath).isDirectory())
+        files = [...files, ...listMediaInDir(subPath)];
+      else files.push(subPath.replace(/^public\//, ""));
+    }
   });
   return files;
 }
@@ -48,8 +50,32 @@ function fileNameToMediaType(filename: string): "other" | "image" | "video" {
   return "other";
 }
 
-export async function getListOfFiles() {
-  return listMediaInDir("public");
+type Predicate<T> = (value: T, index: number, array: T[]) => Promise<boolean>;
+const asyncFilter = async <T>(arr: T[], predicate: Predicate<T>) =>
+  Promise.all(arr.map(predicate)).then((results) =>
+    arr.filter((_v, index) => results[index])
+  );
+
+// TODO test sortedAs filter option
+export async function getListOfFiles(sortedAs?: string) {
+  const res = sortedAs
+    ? asyncFilter(listMediaInDir("public"), async (mediaPath) => {
+        const metadata = await getMetadata(mediaPath, new Date());
+        return metadata?.state?.sortedAs === sortedAs;
+      })
+    : listMediaInDir("public");
+  return res;
+}
+
+export async function getSortedNeighbors(mediaPath: string, _timestamp: Date) {
+  const { state } = await getMetadata(mediaPath, new Date());
+  const filesInSameCategory = await getListOfFiles(state.sortedAs);
+  const currentIndex = filesInSameCategory.findIndex((e) => e === mediaPath);
+  if (currentIndex === -1) return {};
+  return {
+    nextPathInCategory: filesInSameCategory[currentIndex + 1],
+    prevPathInCategory: filesInSameCategory[currentIndex - 1],
+  };
 }
 
 /**

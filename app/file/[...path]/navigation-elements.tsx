@@ -6,6 +6,7 @@ import { KeyActions } from "@/app/keyboard-input/key-listener";
 import styles from "../../page.module.css";
 import { ServerMediaMetadata } from "@/app/server-actions/actions";
 import { useMediaStateServerSync } from "./media-state-server-sync-hook";
+import { useEffect, useState } from "react";
 
 function LinkIfSet({
   href,
@@ -25,6 +26,20 @@ function LinkIfSet({
   );
 }
 
+/**
+ * @description this will stop errors due to hydration mismatch between server
+ * and client HTML-DOM. The flag "suppressHydrationWarning" can not be used to
+ * replace this, since it is only for text-content and argument value changes,
+ * not for differnt sub-trees in the HTML-DOM.
+ * */
+const useChangesAfterHydration = () => {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  return isMounted;
+};
+
 type Props = Readonly<{
   metadata: ServerMediaMetadata;
   children?: React.ReactNode;
@@ -40,11 +55,13 @@ export default function NavigationElements(props: Props) {
       ref={mediaStateHook.resizeTriggerElementRef}
     >
       {/* Buttons/show meta infos about images */}
-      <div className={styles.sortOptions}>
-        {mediaStateHook.sortOptions.map((option) => {
-          return <div key={option}>{option}</div>;
-        })}
-      </div>
+      {useChangesAfterHydration() && (
+        <div className={styles.sortOptions}>
+          {mediaStateHook.sortOptions.map((option) => {
+            return <div key={option}>{option}</div>;
+          })}
+        </div>
+      )}
       <div
         className={styles.sortLabel}
         onClick={() => mediaStateHook.sortMedia()}

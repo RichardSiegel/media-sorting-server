@@ -12,7 +12,10 @@ import {
   increaseVideoPlaybackSpeed,
   decreaseVideoPlaybackSpeed,
 } from "../client-actions/video-control";
-import { ServerMediaMetadata } from "../server-actions/actions";
+import {
+  ServerMediaMetadata,
+  getSortedNeighbors,
+} from "../server-actions/actions";
 import { pagePrefix } from "../file/[...path]/prefix";
 import { useMediaStateServerSync } from "../file/[...path]/media-state-server-sync-hook";
 
@@ -52,9 +55,26 @@ export const KeyActions = ({ metadata, mediaStateHook }: KeyActionProps) => {
   const router = useRouter();
   const goTo = (path: string) => path && router.push(path);
 
+  const goToPrevPathInCategory = () => {
+    getSortedNeighbors(metadata.current, new Date()).then(
+      ({ prevPathInCategory }) => {
+        prevPathInCategory && goTo(pagePrefix(prevPathInCategory));
+      }
+    );
+  };
+  const goToNextPathInCategory = () => {
+    getSortedNeighbors(metadata.current, new Date()).then(
+      ({ nextPathInCategory }) => {
+        nextPathInCategory && goTo(pagePrefix(nextPathInCategory));
+      }
+    );
+  };
+
   useKeyListener([
-    [["ArrowDown", "ArrowRight", "l"], goTo, pagePrefix(nextPath)],
-    [["ArrowLeft", "ArrowUp", "h"], goTo, pagePrefix(prevPath)],
+    [["ArrowRight", "l"], goTo, pagePrefix(nextPath)],
+    [["ArrowLeft", "h"], goTo, pagePrefix(prevPath)],
+    [["ArrowUp"], goToPrevPathInCategory],
+    [["ArrowDown"], goToNextPathInCategory],
     [["Enter", "f"], toggleFullscreen],
     [["k"], toggleVideoPlay],
     [["."], jumpForwardInVideo],

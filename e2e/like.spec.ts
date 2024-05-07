@@ -23,12 +23,12 @@ test("the page should save like states and allow changes", async ({ page }) => {
   expect(
     JSON.parse(
       fs.readFileSync("public/.media-sorting-server-state.json").toString()
-    )["von%20oben.jpg"]["isFavorite"]
+    )["von oben.jpg"]["isFavorite"]
   ).toEqual(true);
   expect(
     JSON.parse(
       fs.readFileSync("public/.media-sorting-server-state.json").toString()
-    )["b%C3%A4ume_2.jpg"]["isFavorite"]
+    )["bäume_2.jpg"]["isFavorite"]
   ).toEqual(true);
 
   // Set all pages to unlike
@@ -46,12 +46,12 @@ test("the page should save like states and allow changes", async ({ page }) => {
   expect(
     JSON.parse(
       fs.readFileSync("public/.media-sorting-server-state.json").toString()
-    )["von%20oben.jpg"]["isFavorite"]
+    )["von oben.jpg"]["isFavorite"]
   ).toEqual(false);
   expect(
     JSON.parse(
       fs.readFileSync("public/.media-sorting-server-state.json").toString()
-    )["b%C3%A4ume_2.jpg"]["isFavorite"]
+    )["bäume_2.jpg"]["isFavorite"]
   ).toEqual(false);
 
   // Reset Test Server State

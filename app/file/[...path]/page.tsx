@@ -11,7 +11,7 @@ type Props = {
 
 export default async function ShowMediaFilePage({ params }: Props) {
   const mediaPath = params.path.join("/");
-  const metadata = await getMetadata(mediaPath, new Date());
+  const metadata = await getMetadata(decodeURI(mediaPath), new Date());
   //console.table(metadata); // This is helpful to see what is preloaded
 
   return (
