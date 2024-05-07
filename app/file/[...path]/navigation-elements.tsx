@@ -40,6 +40,21 @@ export default function NavigationElements(props: Props) {
       ref={mediaStateHook.resizeTriggerElementRef}
     >
       {/* Buttons/show meta infos about images */}
+      <div className={styles.sortOptions}>
+        {mediaStateHook.sortOptions.map((option) => {
+          return <div key={option}>{option}</div>;
+        })}
+      </div>
+      <div
+        className={styles.sortLabel}
+        onClick={() => mediaStateHook.sortMedia()}
+      >
+        {["", "undefined", undefined, null].includes(
+          mediaStateHook.state.sortedAs
+        )
+          ? "sort"
+          : `sorted: ${mediaStateHook.state.sortedAs}`}
+      </div>
       <div
         className={styles.likeSwitch}
         onClick={mediaStateHook.toggleFavorite}

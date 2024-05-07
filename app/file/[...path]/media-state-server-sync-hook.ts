@@ -2,7 +2,9 @@ import { rotateImage } from "@/app/client-actions/image-control";
 import {
   MediaState,
   getMediaStatesForFile,
+  loadSessionShortCutsForSort,
   setMediaStatesForFile,
+  updateSessionShortCutsForSort,
 } from "@/app/client-actions/session-state";
 import { ServerMediaMetadata } from "@/app/server-actions/actions";
 import {
@@ -20,6 +22,22 @@ export const useMediaStateServerSync = (metadata: ServerMediaMetadata) => {
   const [state, setState] = useState(
     getMediaStatesForFile(metadata.current) ?? metadata.state
   );
+  const loadSessionShortCuts = () =>
+    [
+      ["[0]", loadSessionShortCutsForSort("0")],
+      ["[1]", loadSessionShortCutsForSort("1")],
+      ["[2]", loadSessionShortCutsForSort("2")],
+      ["[3]", loadSessionShortCutsForSort("3")],
+      ["[4]", loadSessionShortCutsForSort("4")],
+      ["[5]", loadSessionShortCutsForSort("5")],
+      ["[6]", loadSessionShortCutsForSort("6")],
+      ["[7]", loadSessionShortCutsForSort("7")],
+      ["[8]", loadSessionShortCutsForSort("8")],
+      ["[9]", loadSessionShortCutsForSort("9")],
+    ]
+      .filter((item) => !!item[1])
+      .map((item) => item.join(" "));
+  const [sortOptions, setSortOptions] = useState(loadSessionShortCuts());
 
   // Set session storage, server state and ui state
   const setStateServerSync = (stateChanges: Partial<MediaState>) => {
@@ -50,15 +68,32 @@ export const useMediaStateServerSync = (metadata: ServerMediaMetadata) => {
 
   // prepare interface of custom hook
   const toggleFavorite = () => {
-    setStateServerSync({ ...state, isFavorite: !state.isFavorite });
+    setStateServerSync({ isFavorite: !state.isFavorite });
   };
 
   const rotateMedia = () => {
     const rotation = ((state.rotation + 90) % 360) as 0 | 90 | 180 | 270;
-    setStateServerSync({ ...state, rotation });
+    setStateServerSync({ rotation });
     rotateImage(rotation);
   };
 
+  const sortMedia = (categoryShortCut: string = "undefined") => {
+    let categoryLabel = loadSessionShortCutsForSort(categoryShortCut);
+    if (typeof categoryLabel !== "string" || categoryLabel === state.sortedAs) {
+      categoryLabel = prompt("New Sorting Label:");
+      updateSessionShortCutsForSort(categoryShortCut, categoryLabel);
+    }
+    setStateServerSync({ sortedAs: categoryLabel ?? undefined });
+    setSortOptions(loadSessionShortCuts());
+  };
+
   // state = {isFavorite,...}
-  return { resizeTriggerElementRef, state, toggleFavorite, rotateMedia };
+  return {
+    resizeTriggerElementRef,
+    state,
+    toggleFavorite,
+    rotateMedia,
+    sortMedia,
+    sortOptions,
+  };
 };

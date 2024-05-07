@@ -3,10 +3,27 @@ import { extractPathAndName, isRunOnServer } from "../utils";
 export const defaultMediaState = {
   isFavorite: false,
   rotation: 0 as 0 | 90 | 180 | 270,
+  sortedAs: "undefined",
 };
 export type MediaState = typeof defaultMediaState;
 type MediaStateKey = keyof MediaState;
 export type MediaStateDir = { [key in string]?: MediaState };
+
+// TODO test
+export const updateSessionShortCutsForSort = (
+  shortcut: string,
+  sortLabel: string | null,
+  browserWindow = isRunOnServer ? undefined : window
+) =>
+  sortLabel !== null
+    ? browserWindow?.sessionStorage?.setItem(`&${shortcut}`, sortLabel)
+    : browserWindow?.sessionStorage?.removeItem(`&${shortcut}`);
+
+// TODO test
+export const loadSessionShortCutsForSort = (
+  shortcut: string,
+  browserWindow = isRunOnServer ? undefined : window
+) => browserWindow?.sessionStorage?.getItem(`&${shortcut}`);
 
 /**
  * @description This overwrites the media states for the specified directory.
