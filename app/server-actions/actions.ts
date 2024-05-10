@@ -30,27 +30,27 @@ class FsInfo {
       : undefined;
 }
 
-const saveCacheReturn = (dir: string, returnToCache: string[]) => {
-  const stateFilePath = `${decodeURI(dir)}/.dirContent.cache`;
-  fs.writeFile(stateFilePath, JSON.stringify(returnToCache), (err) => {
-    err
-      ? console.error(`Error writing file ${stateFilePath}:`, err)
-      : console.log(`State saved successfully for ${stateFilePath}`);
-  });
-};
+//const saveCacheReturn = (dir: string, returnToCache: string[]) => {
+//const stateFilePath = `${decodeURI(dir)}/.dirContent.cache`;
+//fs.writeFile(stateFilePath, JSON.stringify(returnToCache), (err) => {
+//err
+//? console.error(`Error writing file ${stateFilePath}:`, err)
+//: console.log(`State saved successfully for ${stateFilePath}`);
+//});
+//};
 
-const getCachedReturn = (dir: string) => {
-  const stateFilePath = `${decodeURI(dir)}/.dirContent.cache`;
-  if (!fs.existsSync(stateFilePath)) {
-    return null;
-  }
-  const stringArray = JSON.parse(
-    fs.readFileSync(stateFilePath).toString()
-  ) as string[];
-  if (typeof stringArray !== "object" && typeof stringArray[0] !== "string")
-    throw Error(`Unexpected return format from ${stateFilePath}`);
-  return stringArray;
-};
+//const getCachedReturn = (dir: string) => {
+//const stateFilePath = `${decodeURI(dir)}/.dirContent.cache`;
+//if (!fs.existsSync(stateFilePath)) {
+//return null;
+//}
+//const stringArray = JSON.parse(
+//fs.readFileSync(stateFilePath).toString()
+//) as string[];
+//if (typeof stringArray !== "object" && typeof stringArray[0] !== "string")
+//throw Error(`Unexpected return format from ${stateFilePath}`);
+//return stringArray;
+//};
 
 let lastProgress: number;
 function listMediaInDir(
@@ -62,11 +62,11 @@ function listMediaInDir(
     }
   }
 ) {
-  const cachedReturn = getCachedReturn(dir);
-  if (cachedReturn) {
-    console.log(`DONE: getCachedReturn("${dir}")`);
-    return cachedReturn;
-  }
+  //const cachedReturn = getCachedReturn(dir);
+  //if (cachedReturn) {
+  //console.log(`DONE: getCachedReturn("${dir}")`);
+  //return cachedReturn;
+  //}
 
   let files: string[] = [];
   let processedFiles = 0;
@@ -91,7 +91,7 @@ function listMediaInDir(
   traverseDirectory(dir);
   console.log(`DONE: traverseDirectory("${dir}")`);
 
-  saveCacheReturn(dir, files);
+  //saveCacheReturn(dir, files);
   return files;
 }
 
