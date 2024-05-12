@@ -75,7 +75,7 @@ function listMediaInDir(
   function traverseDirectory(directory: string) {
     fs.readdirSync(directory).forEach((file) => {
       const subPath = path.join(directory, file);
-      if (!file.startsWith(".")) {
+      if (!file.startsWith(".") && file !== "sorted") {
         if (fs.statSync(subPath).isDirectory()) {
           traverseDirectory(subPath);
         } else {

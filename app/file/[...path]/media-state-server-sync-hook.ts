@@ -44,7 +44,7 @@ export const useMediaStateServerSync = (metadata: ServerMediaMetadata) => {
     // session storage
     const newStateDir = setMediaStatesForFile(metadata.current, stateChanges);
     // server state
-    updateMediaStateOnServer(dirPath, newStateDir).then(() => {
+    updateMediaStateOnServer(dirPath, newStateDir, fileName).then(() => {
       console.log("Server should be done saving");
     });
     //ui state

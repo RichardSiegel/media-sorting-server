@@ -8,7 +8,7 @@ export default async function Gallery({ fileList }: { fileList: string[] }) {
   return (
     <div className={styles.gallery}>
       {fileList.map((file) => {
-        const isImage = file.endsWith(".jpg");
+        const isImage = file.endsWith(".jpg") || file.endsWith(".png");
         const imageAsBackground = isImage
           ? { backgroundImage: `url('${filePrefix(file)}')` }
           : {};
