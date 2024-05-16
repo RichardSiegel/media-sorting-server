@@ -30,28 +30,6 @@ class FsInfo {
       : undefined;
 }
 
-//const saveCacheReturn = (dir: string, returnToCache: string[]) => {
-//const stateFilePath = `${decodeURI(dir)}/.dirContent.cache`;
-//fs.writeFile(stateFilePath, JSON.stringify(returnToCache), (err) => {
-//err
-//? console.error(`Error writing file ${stateFilePath}:`, err)
-//: console.log(`State saved successfully for ${stateFilePath}`);
-//});
-//};
-
-//const getCachedReturn = (dir: string) => {
-//const stateFilePath = `${decodeURI(dir)}/.dirContent.cache`;
-//if (!fs.existsSync(stateFilePath)) {
-//return null;
-//}
-//const stringArray = JSON.parse(
-//fs.readFileSync(stateFilePath).toString()
-//) as string[];
-//if (typeof stringArray !== "object" && typeof stringArray[0] !== "string")
-//throw Error(`Unexpected return format from ${stateFilePath}`);
-//return stringArray;
-//};
-
 let lastProgress: number;
 function listMediaInDir(
   dir: string,
@@ -62,12 +40,6 @@ function listMediaInDir(
     }
   }
 ) {
-  //const cachedReturn = getCachedReturn(dir);
-  //if (cachedReturn) {
-  //console.log(`DONE: getCachedReturn("${dir}")`);
-  //return cachedReturn;
-  //}
-
   let files: string[] = [];
   let processedFiles = 0;
 
@@ -82,16 +54,13 @@ function listMediaInDir(
           files.push(subPath.replace(/^public\//, ""));
           processedFiles++;
           updateProgress("Registered files", processedFiles);
-          //console.log(`File added: ${subPath.replace(/^public\//, "")}`);
         }
       }
     });
   }
 
   traverseDirectory(dir);
-  console.log(`DONE: traverseDirectory("${dir}")`);
 
-  //saveCacheReturn(dir, files);
   return files;
 }
 
@@ -108,7 +77,7 @@ const asyncFilter = async <T>(arr: T[], predicate: Predicate<T>) =>
     arr.filter((_v, index) => results[index])
   );
 
-// TODO test sortedAs filter option
+// TODO remove slow sortedAs filter option
 export async function getListOfFiles(sortedAs?: string) {
   const res = sortedAs
     ? asyncFilter(listMediaInDir("public"), async (mediaPath) => {
@@ -144,7 +113,7 @@ export async function getMetadata(
   const fsInfo = new FsInfo(listFiles("public"));
   const { dirPath, fileName } = extractPathAndName(mediaPath);
   const mediaState = await loadMediaStateFromServer(
-    dirPath,
+    `public/${dirPath}`,
     fileName,
     new Date()
   );

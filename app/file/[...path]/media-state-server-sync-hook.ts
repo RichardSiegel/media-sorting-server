@@ -42,23 +42,29 @@ export const useMediaStateServerSync = (metadata: ServerMediaMetadata) => {
   // Set session storage, server state and ui state
   const setStateServerSync = (stateChanges: Partial<MediaState>) => {
     // session storage
-    const newStateDir = setMediaStatesForFile(metadata.current, stateChanges);
+    const newStateFile = setMediaStatesForFile(metadata.current, stateChanges);
     // server state
-    updateMediaStateOnServer(dirPath, newStateDir, fileName).then(() => {
-      console.log("Server should be done saving");
-    });
+    updateMediaStateOnServer(metadata.current, newStateFile)
+      .then(() => {
+        console.log("Server should be done saving");
+      })
+      .catch((e) => {
+        console.error(e);
+        alert(e);
+      });
     //ui state
-    const newStateFile = newStateDir[fileName];
     if (newStateFile !== undefined) setState(newStateFile);
   };
 
   const updateClientWithChangesFromServer = () => {
     // ask server for current state, if locale state is different from ssr-chached
-    loadMediaStateFromServer(dirPath, fileName, new Date()).then((state) => {
-      setMediaStatesForFile(metadata.current, state);
-      setState(state);
-      rotateImage(state.rotation);
-    });
+    loadMediaStateFromServer(`public/${dirPath}`, fileName, new Date()).then(
+      (state) => {
+        setMediaStatesForFile(metadata.current, state);
+        setState(state);
+        rotateImage(state.rotation);
+      }
+    );
   };
   const resizeTriggerElementRef = useRef(null);
   useResizeObserver(resizeTriggerElementRef, () => rotateImage(state.rotation));
@@ -77,17 +83,16 @@ export const useMediaStateServerSync = (metadata: ServerMediaMetadata) => {
     rotateImage(rotation);
   };
 
-  const sortMedia = (categoryShortCut: string = "undefined") => {
+  const sortMedia = (categoryShortCut?: string) => {
     let categoryLabel = loadSessionShortCutsForSort(categoryShortCut);
-    if (typeof categoryLabel !== "string" || categoryLabel === state.sortedAs) {
-      categoryLabel = prompt("New Sorting Label:");
+    if (categoryShortCut === undefined || categoryLabel === state.sortedAs) {
+      categoryLabel = prompt("New Sorting Label:") ?? undefined;
       updateSessionShortCutsForSort(categoryShortCut, categoryLabel);
     }
     setStateServerSync({ sortedAs: categoryLabel ?? undefined });
     setSortOptions(loadSessionShortCuts());
   };
 
-  // state = {isFavorite,...}
   return {
     resizeTriggerElementRef,
     state,

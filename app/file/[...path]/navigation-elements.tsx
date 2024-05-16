@@ -66,9 +66,7 @@ export default function NavigationElements(props: Props) {
         className={styles.sortLabel}
         onClick={() => mediaStateHook.sortMedia()}
       >
-        {["", "undefined", undefined, null].includes(
-          mediaStateHook.state.sortedAs
-        )
+        {mediaStateHook.state.sortedAs === undefined
           ? "sort"
           : `sorted: ${mediaStateHook.state.sortedAs}`}
       </div>
