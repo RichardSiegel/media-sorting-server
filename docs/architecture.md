@@ -18,10 +18,21 @@ The list below shows the planed and implemented functions:
 - [x] setup a unit tests and add them to the qa command
 - [x] add missing test cases
 - [x] add support for displaying videos
-- [ ] make sure nothing loads multiple times on the page or on client side if it can be done on the server
-- [ ] add a function to turn the image 90 degrees and trigger it via a page action
-- [ ] add visual feedback for operations performing on media-files
+- [x] make sure nothing loads multiple times on the page or on client side if it can be done on the server
+	- This should be tested again once in a while
+- [x] add a function to turn an image or video 90 degrees on client side
+- [ ] add a function to turn an image or video 90 degrees on the server
 - [ ] update the docs and the '../README.md' file.
+
+### Media Status Metadata
+
+Whenever the Media Sorting Server has to remember any Information about an image or video, a status object is updated with that Information. We defined a type 'MediaState', which is kept in sessionStorage, in files on the server and as state of the "useMediaStateServerSync" hook.
+
+| Storage           | Purpose                                                         |
+|-------------------|-----------------------------------------------------------------|
+| Hook State        | update the UI in real-time                                      |
+| JSON Server Files | keep state across clients                                       |
+| sessionStorage    | to update UI across pages while cached page from server is used |
 
 ### Images
 
@@ -34,7 +45,7 @@ The original video files on the server might not be optimized for streaming over
 For playback we will use a plain HTML5 Video-Tag, since that should offer all we need. We also evaluated [next-video](https://www.npmjs.com/package/next-video) but, since it is build to work with dedicated video hosting and optimization services, it would complicate the development of this media server. Thus we opt for the simple video-tags which should get the job done.
 
 Currently implemented:
-- [ ] playback of original files from the server (which might take a while for loading)
+- [x] playback of original files from the server (which might take a while for loading)
 - [ ] automatic playback of optimized versions if they are available
 - [ ] file status overview menu, which shows if a video is currently being processed etc.
 - [ ] automatic preparation of streaming video versions in the background on the server.

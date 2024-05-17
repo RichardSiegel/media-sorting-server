@@ -5,9 +5,9 @@
 - [x] Allowing navigation between pictures via arrow keys
 - [x] Allow navigation via next links and enable caching of next (and previous) images
 - [x] Displaying videos from a server directory in full-screen
-- [ ] Permanently move image or video file into a trash directory on the server on key press
-- [ ] Permanently move image or video file into a (new) named directory on the server on key press
-- [ ] Allow the configuration of shortcut keys to move a file to configured directories
+- [x] Permanently move image or video file into a trash directory on the server on key press
+- [x] Permanently move image or video file into a (new) named directory on the server on key press
+- [x] Allow the configuration of shortcut keys to move a file to configured directories
 - [ ] Create mobile UI
 - [ ] handle issues with case sensitive file names
 

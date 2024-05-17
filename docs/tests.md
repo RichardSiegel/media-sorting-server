@@ -15,3 +15,5 @@ The table below lists the page behavious we want to ensure. Unit-tests are not l
 | Marking images and videos as favorites                     | MANUAL TESTING / TODO        |
 | Like and unlike on client and server                       | e2e/like.spec.ts             |
 | Like and unlike (from multiple tabs/browsers)              | MANUAL TESTING / TODO        |
+| Sorting files into categories                              | MANUAL TESTING / TODO        |
+| Navigation between categories, sorting view and overview   | MANUAL TESTING / TODO        |
