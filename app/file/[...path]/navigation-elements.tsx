@@ -69,7 +69,7 @@ export default function NavigationElements(props: Props) {
           {mediaStateHook.state?.sortedIntoPath && (
             <Link
               className={styles.viewEditSwitch}
-              href={mediaStateHook.state?.sortedIntoPath}
+              href={`/file/${mediaStateHook.state?.sortedIntoPath}`}
             >
               {`View only "${mediaStateHook.state.sortedAs}" files`}
             </Link>

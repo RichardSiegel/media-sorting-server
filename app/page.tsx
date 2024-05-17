@@ -7,7 +7,7 @@ import fs from "fs";
 
 export default async function Home() {
   const fileList = await getListOfFiles();
-  const max = 9;
+  const max = 6;
   const oldestFiles = fileList.filter((_, i) => i < max);
   const latestFiles = fileList
     .reverse()
