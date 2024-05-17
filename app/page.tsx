@@ -34,12 +34,14 @@ export default async function Home() {
         </>
       )}
       {sortingCatetories.map(async (directory) => {
+        const filesInDir = await getListOfFiles(directory);
+        if (filesInDir.length == 0) return <></>;
         return (
           <>
             <h1 className={styles.h1} key={directory}>
               {directory}
             </h1>
-            <Gallery fileList={await getListOfFiles(directory)} />
+            <Gallery fileList={filesInDir} />
           </>
         );
       })}
