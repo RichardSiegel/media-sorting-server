@@ -72,7 +72,9 @@ const modifyFilenameIfRedundant = (
       testable.fileExists(targetFile) &&
       testable.iNodeForFile(targetFile) !== sourceInode
     ) {
-      return `${sourceInode}_${fileName}`;
+      const [extension, ...revertedRest] = fileName.split(".").reverse();
+      const baseFileName = revertedRest.reverse().join(".");
+      return `${baseFileName}_${sourceInode}.${extension}`;
     }
   }
   return fileName;
@@ -137,9 +139,11 @@ const createHardlinkInDiretory = (
     targetDir,
     sourceDir
   );
+  const targetFilePath = `${targetDir}/${targetFileName}`;
   ensurePathExists(`${targetDir}`);
-  if (!fs.existsSync(`${targetDir}/${targetFileName}`))
-    fs.linkSync(`${sourceDir}/${fileName}`, `${targetDir}/${targetFileName}`);
+  if (!fs.existsSync(targetFilePath))
+    fs.linkSync(`${sourceDir}/${fileName}`, targetFilePath);
+  return targetFilePath;
 };
 
 export async function updateMediaStateOnServer(
@@ -166,10 +170,22 @@ export async function updateMediaStateOnServer(
   const oldSortedDir = `public/sorted/${oldSortedAs}`;
 
   if (newSortedAs !== oldSortedAs) {
-    if (newSortedAs) testable.createHardlink(dirPath, newSortedDir, fileName);
-    if (oldSortedAs) testable.removeHardlink(dirPath, oldSortedDir, fileName);
-    if (oldSortedAs)
+    if (newSortedAs) {
+      const pathOnServer = testable.createHardlink(
+        dirPath,
+        newSortedDir,
+        fileName
+      );
+      newFileState.sortedIntoPath = pathOnServer
+        .split("/")
+        .filter((segment) => segment !== "public")
+        .join("/");
+    } else newFileState.sortedIntoPath = undefined;
+
+    if (oldSortedAs) {
+      testable.removeHardlink(dirPath, oldSortedDir, fileName);
       testable.updateDirState(null, fileName, oldSortedDir, dirPath);
+    }
   }
 
   if (newSortedAs) {
@@ -180,4 +196,6 @@ export async function updateMediaStateOnServer(
 
   if (oldSortedAs) testable.clenupEmptyDirs(oldSortedDir);
   if (newSortedAs) testable.clenupEmptyDirs(newSortedDir);
+
+  return newFileState.sortedIntoPath;
 }

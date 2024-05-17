@@ -48,34 +48,59 @@ type Props = Readonly<{
 export default function NavigationElements(props: Props) {
   const { metadata, children } = props;
   const mediaStateHook = useMediaStateServerSync(metadata);
+  const afterHydration = useChangesAfterHydration();
 
   return (
     <div
       className={styles.controlOverlay}
       ref={mediaStateHook.resizeTriggerElementRef}
     >
-      {/* Buttons/show meta infos about images */}
-      {useChangesAfterHydration() && (
-        <div className={styles.sortOptions}>
-          {mediaStateHook.sortOptions.map((option) => {
-            return <div key={option}>{option}</div>;
-          })}
-        </div>
+      {metadata.viewingSortedFile ? (
+        metadata.hardlinkToFile && (
+          <Link
+            className={styles.viewEditSwitch}
+            href={`/file/${metadata.hardlinkToFile}`}
+          >
+            Go to Sorting/Edit Mode
+          </Link>
+        )
+      ) : (
+        <>
+          {mediaStateHook.state?.sortedIntoPath && (
+            <Link
+              className={styles.viewEditSwitch}
+              href={mediaStateHook.state?.sortedIntoPath}
+            >
+              {`View only "${mediaStateHook.state.sortedAs}" files`}
+            </Link>
+          )}
+          {/* Buttons/show meta infos about images */}
+          {afterHydration && (
+            <div className={styles.sortOptions}>
+              {mediaStateHook.sortOptions.map((option) => {
+                return <div key={option}>{option}</div>;
+              })}
+            </div>
+          )}
+          <div
+            className={styles.sortLabel}
+            onClick={() => mediaStateHook.sortMedia()}
+          >
+            {mediaStateHook.state.sortedAs === undefined
+              ? "sort"
+              : `sorted: ${mediaStateHook.state.sortedAs}`}
+          </div>
+          <div
+            className={styles.likeSwitch}
+            onClick={mediaStateHook.toggleFavorite}
+          >
+            {mediaStateHook.state.isFavorite ? "Liked <3" : "Like"}
+          </div>
+        </>
       )}
-      <div
-        className={styles.sortLabel}
-        onClick={() => mediaStateHook.sortMedia()}
-      >
-        {mediaStateHook.state.sortedAs === undefined
-          ? "sort"
-          : `sorted: ${mediaStateHook.state.sortedAs}`}
-      </div>
-      <div
-        className={styles.likeSwitch}
-        onClick={mediaStateHook.toggleFavorite}
-      >
-        {mediaStateHook.state.isFavorite ? "Liked <3" : "Like"}
-      </div>
+      <Link className={styles.overview} href="/">
+        Go to Overview
+      </Link>
       {/* Buttons for click navigation and optinal content */}
       <LinkIfSet href={pagePrefix(metadata.prevPath)} testid="navigate-prev">
         {"<"}
@@ -85,13 +110,14 @@ export default function NavigationElements(props: Props) {
         {">"}
       </LinkIfSet>
       {/* Add key shortcuts */}
-      <KeyActions
-        metadata={metadata}
-        mediaStateHook={mediaStateHook}
-      ></KeyActions>
+      <KeyActions metadata={metadata} mediaStateHook={mediaStateHook} />
       {/* Preloading the next images */}
-      {<link rel="preload" href={filePrefix(metadata.prevPath)} as="image" />}
-      {<link rel="preload" href={filePrefix(metadata.nextPath)} as="image" />}
+      {metadata.prevPath && (
+        <link rel="preload" href={filePrefix(metadata.prevPath)} as="image" />
+      )}
+      {metadata.nextPath && (
+        <link rel="preload" href={filePrefix(metadata.nextPath)} as="image" />
+      )}
       {/* TODO: check if the type argument should be used here with image|video|text */}
       {/* https://www.w3schools.com/tags/att_link_type.asp */}
       {/* https://www.iana.org/assignments/media-types/media-types.xhtml */}

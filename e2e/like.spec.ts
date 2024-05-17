@@ -11,6 +11,10 @@ test("the page should save like states and allow changes", async ({ page }) => {
   // Set all pages to like
   await page.goto("http://localhost:3000/");
   await page.getByRole("link").first().click();
+  await page.getByRole("link", { name: ">" }).click();
+  await page.getByRole("link", { name: ">" }).click();
+  await page.getByRole("link", { name: ">" }).click();
+  await page.getByRole("link", { name: ">" }).click();
   await page.getByText("Like").click();
   await page.getByRole("link", { name: "<" }).click();
   await page.getByText("Like").click();

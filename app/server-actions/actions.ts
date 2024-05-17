@@ -77,26 +77,11 @@ const asyncFilter = async <T>(arr: T[], predicate: Predicate<T>) =>
     arr.filter((_v, index) => results[index])
   );
 
-// TODO remove slow sortedAs filter option
 export async function getListOfFiles(sortedAs?: string) {
   const res = sortedAs
-    ? asyncFilter(listMediaInDir("public"), async (mediaPath) => {
-        const metadata = await getMetadata(mediaPath, new Date());
-        return metadata?.state?.sortedAs === sortedAs;
-      })
+    ? listMediaInDir(`public/sorted/${sortedAs}`)
     : listMediaInDir("public");
   return res;
-}
-
-export async function getSortedNeighbors(mediaPath: string, _timestamp: Date) {
-  const { state } = await getMetadata(mediaPath, new Date());
-  const filesInSameCategory = await getListOfFiles(state.sortedAs);
-  const currentIndex = filesInSameCategory.findIndex((e) => e === mediaPath);
-  if (currentIndex === -1) return {};
-  return {
-    nextPathInCategory: filesInSameCategory[currentIndex + 1],
-    prevPathInCategory: filesInSameCategory[currentIndex - 1],
-  };
 }
 
 /**
@@ -110,7 +95,10 @@ export async function getMetadata(
   timestamp: Date,
   listFiles = listMediaInDir
 ) {
-  const fsInfo = new FsInfo(listFiles("public"));
+  const viewingSortedFiles = mediaPath.startsWith("sorted/");
+  const fsInfo = viewingSortedFiles
+    ? new FsInfo(listFiles(`public/sorted/${mediaPath.split("/")[1] ?? ""}`))
+    : new FsInfo(listFiles("public"));
   const { dirPath, fileName } = extractPathAndName(mediaPath);
   const mediaState = await loadMediaStateFromServer(
     `public/${dirPath}`,
@@ -125,6 +113,12 @@ export async function getMetadata(
     nextPath: fsInfo.pathAfter(mediaPath),
     prevPath: fsInfo.pathBefore(mediaPath),
     state: mediaState,
+    viewingSortedFile: viewingSortedFiles,
+    hardlinkToFile:
+      mediaState.firstPathOnServer &&
+      fs.existsSync(`public/${mediaState.firstPathOnServer}`)
+        ? mediaState.firstPathOnServer
+        : undefined,
   };
 }
 

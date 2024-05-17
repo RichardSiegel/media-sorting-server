@@ -4,6 +4,8 @@ export const defaultMediaState = {
   isFavorite: false,
   rotation: 0 as 0 | 90 | 180 | 270,
   sortedAs: undefined as string | undefined,
+  sortedIntoPath: undefined as string | undefined,
+  firstPathOnServer: undefined as string | undefined,
 };
 export type MediaState = typeof defaultMediaState;
 type MediaStateKey = keyof MediaState;

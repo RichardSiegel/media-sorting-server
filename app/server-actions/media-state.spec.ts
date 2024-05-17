@@ -15,6 +15,7 @@ describe("updateMediaStateOnServer", () => {
     "file-sortedAs-undefined.png": { ...defaultMediaState },
     "other.jpg": { ...defaultMediaState },
     "file-non-defualt.png": {
+      ...defaultMediaState,
       isFavorite: true,
       rotation: 180,
       sortedAs: "category",
@@ -28,7 +29,7 @@ describe("updateMediaStateOnServer", () => {
       _timestamp: Date
     ) => exampleDirState[fileName] ?? defaultMediaState,
     updateDirState: vitest.fn(),
-    createHardlink: vitest.fn(),
+    createHardlink: vitest.fn().mockReturnValue("mocked/path/on/server"),
     removeHardlink: vitest.fn(),
     clenupEmptyDirs: vitest.fn(),
   };
@@ -51,7 +52,7 @@ describe("updateMediaStateOnServer", () => {
   });
 
   it("creates hardlink in sortedAs category if sortedAs changed", async () => {
-    const createHardlink = vitest.fn();
+    const createHardlink = vitest.fn().mockReturnValue("mocked/path/on/server");
     const oldFileState = exampleDirState["file-non-defualt.png"] as MediaState;
     await updateMediaStateOnServer(
       "some/path/to/a/file-non-defualt.png",
@@ -68,7 +69,7 @@ describe("updateMediaStateOnServer", () => {
   });
 
   it("will not create hardlink in sortedAs category if sortedAs changed to undefined", async () => {
-    const createHardlink = vitest.fn();
+    const createHardlink = vitest.fn().mockReturnValue("mocked/path/on/server");
     const oldFileState = exampleDirState[
       "file-non-defualt.png"
     ] as unknown as MediaState;
@@ -81,7 +82,7 @@ describe("updateMediaStateOnServer", () => {
   });
 
   it("will not create hardlink in sortedAs category if sortedAs remained unchanged", async () => {
-    const createHardlink = vitest.fn();
+    const createHardlink = vitest.fn().mockReturnValue("mocked/path/on/server");
     await updateMediaStateOnServer(
       "some/path/to/a/file-non-defualt.png",
       exampleDirState["file-non-defualt.png"] as MediaState,
@@ -271,7 +272,7 @@ describe("updateFileStateInDirectoryStateFile", () => {
       const exampleDirState: MediaStateDir = {
         "changed.jpg": alteredFileState,
         "filename.mp4": defaultMediaState,
-        "42_filename.mp4": defaultMediaState,
+        "filename_42.mp4": defaultMediaState,
         "other.png": defaultMediaState,
       };
       let loadDirState = (_path: string) => exampleDirState;
@@ -288,7 +289,7 @@ describe("updateFileStateInDirectoryStateFile", () => {
         expect(saveJsonFile).toHaveBeenCalledOnce();
         expect(saveJsonFile).toHaveBeenCalledWith(
           "sorted/category-path-used-by-file-with-same-name/.media-sorting-server-state.json",
-          { ...exampleDirState, "42_filename.mp4": alteredFileState }
+          { ...exampleDirState, "filename_42.mp4": alteredFileState }
         );
       });
 
@@ -303,7 +304,7 @@ describe("updateFileStateInDirectoryStateFile", () => {
         );
         const exampleDirStateWithoutFilenameMp4 = { ...exampleDirState };
         // @ts-ignore
-        delete exampleDirStateWithoutFilenameMp4["42_filename.mp4"];
+        delete exampleDirStateWithoutFilenameMp4["filename_42.mp4"];
         expect(saveJsonFile).toHaveBeenCalledOnce();
         expect(saveJsonFile).toHaveBeenCalledWith(
           "sorted/category-path-used-by-file-with-same-name/.media-sorting-server-state.json",
@@ -312,7 +313,7 @@ describe("updateFileStateInDirectoryStateFile", () => {
       });
 
       it("delete state file if it was emptied by file-entry removal", () => {
-        const singleEntryExample = { "42_filename.mp4": defaultMediaState };
+        const singleEntryExample = { "filename_42.mp4": defaultMediaState };
         loadDirState = (_path: string) => singleEntryExample;
         const saveJsonFile = vitest.fn();
         const deleteFile = vitest.fn();

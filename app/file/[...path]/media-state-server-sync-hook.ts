@@ -41,19 +41,28 @@ export const useMediaStateServerSync = (metadata: ServerMediaMetadata) => {
 
   // Set session storage, server state and ui state
   const setStateServerSync = (stateChanges: Partial<MediaState>) => {
+    // ui state while waiting for server (loading spinners could be triggered here)
+    setState({ ...state, ...stateChanges });
     // session storage
-    const newStateFile = setMediaStatesForFile(metadata.current, stateChanges);
+    let newStateFile = setMediaStatesForFile(metadata.current, stateChanges);
     // server state
     updateMediaStateOnServer(metadata.current, newStateFile)
-      .then(() => {
-        console.log("Server should be done saving");
+      .then((sortedIntoPath) => {
+        if (newStateFile.sortedIntoPath !== sortedIntoPath) {
+          newStateFile = setMediaStatesForFile(metadata.current, {
+            sortedIntoPath,
+          });
+        }
+        console.log(`File hardlink is now set to ${sortedIntoPath}`);
       })
       .catch((e) => {
         console.error(e);
         alert(e);
+      })
+      .finally(() => {
+        //ui state
+        if (newStateFile !== undefined) setState(newStateFile);
       });
-    //ui state
-    if (newStateFile !== undefined) setState(newStateFile);
   };
 
   const updateClientWithChangesFromServer = () => {
@@ -70,6 +79,7 @@ export const useMediaStateServerSync = (metadata: ServerMediaMetadata) => {
   useResizeObserver(resizeTriggerElementRef, () => rotateImage(state.rotation));
 
   // only when this component is loaded
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(updateClientWithChangesFromServer, []);
 
   // prepare interface of custom hook
@@ -89,7 +99,10 @@ export const useMediaStateServerSync = (metadata: ServerMediaMetadata) => {
       categoryLabel = prompt("New Sorting Label:") ?? undefined;
       updateSessionShortCutsForSort(categoryShortCut, categoryLabel);
     }
-    setStateServerSync({ sortedAs: categoryLabel ?? undefined });
+    setStateServerSync({
+      sortedAs: categoryLabel ?? undefined,
+      firstPathOnServer: metadata.current,
+    });
     setSortOptions(loadSessionShortCuts());
   };
 

@@ -13,10 +13,18 @@
 	text-align: left;
 }
 
+.doneH1{
+	color: gray;
+	font-style: italic;
+	font-size: 3vw;
+	margin: 3vw 1vw 2vw 1.5vw;
+	text-align: left;
+}
+
 .galleryImage {
 	/*make the background image cover the container*/
-	height: 31vw;
-	width: 31vw;
+	height: 15vw;
+	width: 15vw;
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center;
@@ -107,3 +115,18 @@
 	right: 20px;
  }
 
+.overview { 
+	cursor: pointer;
+	text-shadow: 0px 0px 10px black, 0px 0px 3px black;
+	position: absolute;
+	top: 10px;
+	right: 20px;
+ }
+
+.viewEditSwitch { 
+	cursor: pointer;
+	text-shadow: 0px 0px 10px black, 0px 0px 3px black;
+	position: absolute;
+	top: 35px;
+	right: 20px;
+ }
