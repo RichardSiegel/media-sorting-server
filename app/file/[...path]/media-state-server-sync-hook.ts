@@ -54,14 +54,12 @@ export const useMediaStateServerSync = (metadata: ServerMediaMetadata) => {
           });
         }
         console.log(`File hardlink is now set to ${sortedIntoPath}`);
+        //ui state
+        if (newStateFile !== undefined) setState(newStateFile);
       })
       .catch((e) => {
         console.error(e);
         alert(e);
-      })
-      .finally(() => {
-        //ui state
-        if (newStateFile !== undefined) setState(newStateFile);
       });
   };
 

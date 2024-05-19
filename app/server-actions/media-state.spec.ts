@@ -32,6 +32,7 @@ describe("updateMediaStateOnServer", () => {
     createHardlink: vitest.fn().mockReturnValue("mocked/path/on/server"),
     removeHardlink: vitest.fn(),
     clenupEmptyDirs: vitest.fn(),
+    revalidatePath: vitest.fn(),
   };
 
   it("saves a directory media state for a file", async () => {
@@ -235,6 +236,7 @@ describe("updateMediaStateOnServer", () => {
 
 describe("updateFileStateInDirectoryStateFile", () => {
   const alteredFileState: MediaState = {
+    ...defaultMediaState,
     isFavorite: true,
     rotation: 180,
     sortedAs: "category",

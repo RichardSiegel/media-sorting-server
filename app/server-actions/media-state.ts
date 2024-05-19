@@ -6,6 +6,7 @@ import {
   defaultMediaState,
 } from "../client-actions/session-state";
 import { extractPathAndName } from "../utils";
+import { revalidatePath } from "next/cache";
 
 const stateFileFor = (dirPath: string) =>
   `${
@@ -68,13 +69,17 @@ const modifyFilenameIfRedundant = (
     const targetFile = `${targetDir}/${fileName}`;
     const sourceFile = `${sourceDirForHardlinkCheck}/${fileName}`;
     const sourceInode = testable.iNodeForFile(sourceFile);
+    const [extension, ...revertedRest] = fileName.split(".").reverse();
+    const baseFileName = revertedRest.reverse().join(".");
+    const alternativeFileName = `${baseFileName}_${sourceInode}.${extension}`;
+    if (testable.fileExists(`${targetDir}/${alternativeFileName}`)) {
+      return alternativeFileName;
+    }
     if (
       testable.fileExists(targetFile) &&
       testable.iNodeForFile(targetFile) !== sourceInode
     ) {
-      const [extension, ...revertedRest] = fileName.split(".").reverse();
-      const baseFileName = revertedRest.reverse().join(".");
-      return `${baseFileName}_${sourceInode}.${extension}`;
+      return alternativeFileName;
     }
   }
   return fileName;
@@ -156,6 +161,7 @@ export async function updateMediaStateOnServer(
     removeHardlink: removeHardlinkInDiretory,
     // TODO write tests that dirs are cleand up if emptied
     clenupEmptyDirs: removeEmptyDirs,
+    revalidatePath: revalidatePath,
   }
 ) {
   const { dirPath, fileName } = extractPathAndName(`public/${filePath}`);
@@ -183,8 +189,8 @@ export async function updateMediaStateOnServer(
     } else newFileState.sortedIntoPath = undefined;
 
     if (oldSortedAs) {
-      testable.removeHardlink(dirPath, oldSortedDir, fileName);
       testable.updateDirState(null, fileName, oldSortedDir, dirPath);
+      testable.removeHardlink(dirPath, oldSortedDir, fileName);
     }
   }
 
@@ -196,6 +202,9 @@ export async function updateMediaStateOnServer(
 
   if (oldSortedAs) testable.clenupEmptyDirs(oldSortedDir);
   if (newSortedAs) testable.clenupEmptyDirs(newSortedDir);
+
+  testable.revalidatePath("/");
+  testable.revalidatePath("/file/[path]/", "page");
 
   return newFileState.sortedIntoPath;
 }
