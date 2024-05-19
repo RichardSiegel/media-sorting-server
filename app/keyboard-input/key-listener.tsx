@@ -42,48 +42,75 @@ const useKeyListener = async (functionKeyMap: FunctionKeyMap) => {
   }, [handleKeyPress]);
 };
 
-type KeyActionProps = {
+type OverviewKeyActionProps = { pageType: "overview" };
+type FullscreenViewerKeyActionProps = {
+  pageType: "fullscreenViewer";
   metadata: ServerMediaMetadata;
   mediaStateHook: ReturnType<typeof useMediaStateServerSync>;
 };
+type KeyActionProps = OverviewKeyActionProps | FullscreenViewerKeyActionProps;
 
-export const KeyActions = ({ metadata, mediaStateHook }: KeyActionProps) => {
-  const { nextPath, prevPath } = metadata;
+export const KeyActions = (props: KeyActionProps) => {
   const router = useRouter();
   const goTo = (path: string) => path && router.push(path);
 
-  const navigationKeyBindes: FunctionKeyMap = [
-    [["o"], goTo, "/"],
-    [["ArrowRight", "l"], goTo, pagePrefix(nextPath)],
-    [["ArrowLeft", "h"], goTo, pagePrefix(prevPath)],
-    [["Enter", "f"], toggleFullscreen],
-    [["k"], toggleVideoPlay],
-    [["."], jumpForwardInVideo],
-    [[","], jumpBackwardInVideo],
-    [[">"], increaseVideoPlaybackSpeed],
-    [["<"], decreaseVideoPlaybackSpeed],
-  ];
+  let activeKeyBindes: FunctionKeyMap = [[["f"], toggleFullscreen]];
 
-  const editKeyBindes: FunctionKeyMap = [
-    [["s"], mediaStateHook.toggleFavorite],
-    [["r", "t"], mediaStateHook.rotateMedia],
-    [["0"], mediaStateHook.sortMedia, "0"],
-    [["1"], mediaStateHook.sortMedia, "1"],
-    [["2"], mediaStateHook.sortMedia, "2"],
-    [["3"], mediaStateHook.sortMedia, "3"],
-    [["4"], mediaStateHook.sortMedia, "4"],
-    [["5"], mediaStateHook.sortMedia, "5"],
-    [["6"], mediaStateHook.sortMedia, "6"],
-    [["7"], mediaStateHook.sortMedia, "7"],
-    [["8"], mediaStateHook.sortMedia, "8"],
-    [["9"], mediaStateHook.sortMedia, "9"],
-  ];
+  switch (props.pageType) {
+    case "overview": {
+      const navigationKeyBindes: FunctionKeyMap = [];
+      activeKeyBindes = [...activeKeyBindes, ...navigationKeyBindes];
+      break;
+    }
 
-  useKeyListener(
-    metadata.viewingSortedFile
-      ? navigationKeyBindes
-      : [...navigationKeyBindes, ...editKeyBindes]
-  );
+    case "fullscreenViewer": {
+      const { mediaStateHook, metadata } =
+        props as FullscreenViewerKeyActionProps;
+
+      const sortedFileOrOriginal = metadata.viewingSortedFile
+        ? metadata.hardlinkToFile
+        : mediaStateHook.state.sortedIntoPath;
+
+      const navigationKeyBindes: FunctionKeyMap = [
+        [["o"], goTo, "/"],
+        [["ArrowRight", "l"], goTo, pagePrefix(metadata.nextPath)],
+        [["ArrowLeft", "h"], goTo, pagePrefix(metadata.prevPath)],
+        [["e"], goTo, pagePrefix(sortedFileOrOriginal)],
+      ];
+
+      const videoKeyBindes: FunctionKeyMap = [
+        [["k"], toggleVideoPlay],
+        [["."], jumpForwardInVideo],
+        [[","], jumpBackwardInVideo],
+        [[">"], increaseVideoPlaybackSpeed],
+        [["<"], decreaseVideoPlaybackSpeed],
+      ];
+
+      const editKeyBindes: FunctionKeyMap = [
+        [["s"], mediaStateHook.toggleFavorite],
+        [["r"], mediaStateHook.rotateMedia],
+        [["0"], mediaStateHook.sortMedia, "0"],
+        [["1"], mediaStateHook.sortMedia, "1"],
+        [["2"], mediaStateHook.sortMedia, "2"],
+        [["3"], mediaStateHook.sortMedia, "3"],
+        [["4"], mediaStateHook.sortMedia, "4"],
+        [["5"], mediaStateHook.sortMedia, "5"],
+        [["6"], mediaStateHook.sortMedia, "6"],
+        [["7"], mediaStateHook.sortMedia, "7"],
+        [["8"], mediaStateHook.sortMedia, "8"],
+        [["9"], mediaStateHook.sortMedia, "9"],
+      ];
+
+      activeKeyBindes = [
+        ...activeKeyBindes,
+        ...navigationKeyBindes,
+        ...(metadata.mediaType === "video" ? videoKeyBindes : []),
+        ...(!metadata.viewingSortedFile ? editKeyBindes : []),
+      ];
+    }
+  }
+
+  useKeyListener(activeKeyBindes);
 
   return <></>;
 };

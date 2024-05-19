@@ -4,6 +4,7 @@ import styles from "./page.module.css";
 import { getListOfFiles } from "./server-actions/actions";
 import Gallery from "./gallery";
 import fs from "fs";
+import { KeyActions } from "./keyboard-input/key-listener";
 
 export default async function Home() {
   const fileList = await getListOfFiles();
@@ -45,6 +46,7 @@ export default async function Home() {
           </>
         );
       })}
+      <KeyActions pageType="overview" />
     </main>
   );
 }

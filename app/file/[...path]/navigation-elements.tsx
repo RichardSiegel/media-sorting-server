@@ -110,7 +110,11 @@ export default function NavigationElements(props: Props) {
         {">"}
       </LinkIfSet>
       {/* Add key shortcuts */}
-      <KeyActions metadata={metadata} mediaStateHook={mediaStateHook} />
+      <KeyActions
+        pageType="fullscreenViewer"
+        metadata={metadata}
+        mediaStateHook={mediaStateHook}
+      />
       {/* Preloading the next images */}
       {metadata.prevPath && (
         <link rel="preload" href={filePrefix(metadata.prevPath)} as="image" />
