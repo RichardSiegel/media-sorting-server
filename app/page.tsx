@@ -5,6 +5,7 @@ import { getListOfFiles } from "./server-actions/actions";
 import Gallery from "./gallery";
 import fs from "fs";
 import { KeyActions } from "./keyboard-input/key-listener";
+import Link from "next/link";
 
 export default async function Home() {
   const fileList = await getListOfFiles();
@@ -20,6 +21,9 @@ export default async function Home() {
 
   return (
     <main>
+      <Link className={styles.overview} href="/search">
+        Go to Search
+      </Link>
       {latestFiles.length === 0 ? (
         <h1 className={styles.doneH1}>All Your Pictures Are Sorted Below</h1>
       ) : (

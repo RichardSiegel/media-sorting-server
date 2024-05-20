@@ -130,3 +130,16 @@
 	top: 35px;
 	right: 20px;
  }
+
+.searchInputBox {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-evenly;
+ }
+.searchInputBox input {
+    width: -webkit-fill-available;
+    margin: 10px 5px;
+}
+.searchInputBox span {
+    margin: 10px 5px;
+}

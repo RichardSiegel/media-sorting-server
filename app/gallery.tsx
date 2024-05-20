@@ -1,10 +1,8 @@
-"use server";
-
 import Link from "next/link";
 import { filePrefix } from "./file/[...path]/prefix";
 import styles from "./page.module.css";
 
-export default async function Gallery({ fileList }: { fileList: string[] }) {
+export default function Gallery({ fileList }: { fileList: string[] }) {
   return (
     <div className={styles.gallery}>
       {fileList.map((file) => {
