@@ -23,14 +23,14 @@
 
 .galleryImage {
 	/*make the background image cover the container*/
-	height: 15vw;
-	width: 15vw;
+	height: 23vw;
+	width: 23vw;
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center;
 	/*File name*/
 	padding: 3vw;
-	font-size: 2vw;
+	font-size: 1.8vw;
 	text-align: center;
 	text-shadow: 0px 0px 3px black;
 	background-color: #222;

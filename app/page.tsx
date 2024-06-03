@@ -9,7 +9,7 @@ import Link from "next/link";
 
 export default async function Home() {
   const fileList = await getListOfFiles();
-  const max = 6;
+  const max = 4;
   const oldestFiles = fileList.filter((_, i) => i < max);
   const latestFiles = fileList
     .reverse()
